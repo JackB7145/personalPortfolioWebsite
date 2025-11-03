@@ -12,6 +12,7 @@ export const personalInfo = {
   linkedin: "https://linkedin.com/in/jackbranston",
   twitter: "https://twitter.com/jackbranston",
   bio: "Building intelligent, scalable web applications with a focus on API-driven architectures and modern frontend technologies. Passionate about creating self-sustaining systems that evolve with data.",
+  photo: "/profilePicture.jpg"
 };
 
 // Using ProjectCard class instances

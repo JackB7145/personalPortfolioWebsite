@@ -93,7 +93,7 @@ export function ScrollReveal({ progress }: ScrollRevealProps) {
               <span className="relative inline-block">
                 <span className="absolute inset-0 blur-xl bg-red-600 opacity-50" />
                 <span className="relative text-red-500">
-                  ENTER
+                    WELCOME
                 </span>
               </span>
             </motion.h1>
