@@ -1,7 +1,9 @@
+'use client';
+
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Github, Linkedin, Coffee, Calendar } from 'lucide-react';
-import { FaDiscord } from 'react-icons/fa'; 
+import { FaDiscord } from 'react-icons/fa';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
@@ -14,7 +16,7 @@ const personalInfo = {
   email: 'jack@jackbranston.com',
   github: 'https://github.com/jackbranston',
   linkedin: 'https://linkedin.com/in/jackbranston',
-  discord: 'https://discordapp.com/users/766663343502131253', 
+  discord: 'https://discordapp.com/users/766663343502131253',
 };
 
 const availableTimeSlots = [
@@ -36,7 +38,6 @@ export function Contact() {
   const isMobile = useIsMobile();
   const anim = getAnimationConfig(isMobile);
 
-  // ✅ Updated to mix lucide + react-icons seamlessly
   const socialLinks = [
     { icon: Github, label: 'GitHub', href: personalInfo.github },
     { icon: Linkedin, label: 'LinkedIn', href: personalInfo.linkedin },
@@ -86,7 +87,8 @@ export function Contact() {
             </span>
           </h2>
           <p className="text-gray-400 mt-6 max-w-2xl mx-auto text-sm md:text-base px-4">
-            Interested in collaborating or just want to chat? Book a coffee chat or send me a message.
+            Interested in collaborating or just want to chat? Book a coffee chat or send me a
+            message.
           </p>
         </motion.div>
 
@@ -98,7 +100,7 @@ export function Contact() {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{
               duration: isMobile ? 0.3 : 0.6,
-              ease: [0.25, 0.1, 0.25, 1],
+              ease: 'easeInOut', 
             }}
             viewport={{ once: true, margin: '-50px' }}
           >
@@ -135,7 +137,9 @@ export function Contact() {
                 </div>
 
                 <div>
-                  <label className="text-xs md:text-sm text-gray-400 mb-2 block">Available Time Slots</label>
+                  <label className="text-xs md:text-sm text-gray-400 mb-2 block">
+                    Available Time Slots
+                  </label>
                   <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
                     {availableTimeSlots.map((slot) => (
                       <button
@@ -176,7 +180,7 @@ export function Contact() {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{
               duration: isMobile ? 0.3 : 0.6,
-              ease: [0.25, 0.1, 0.25, 1],
+              ease: 'easeInOut', // ✅ fixed typing
             }}
             viewport={{ once: true, margin: '-50px' }}
           >
@@ -240,6 +244,7 @@ export function Contact() {
           transition={{
             delay: isMobile ? 0 : 0.2,
             duration: isMobile ? 0.3 : 0.6,
+            ease: 'easeInOut', // ✅ added for consistency
           }}
           viewport={{ once: true }}
           className="text-center"
@@ -254,6 +259,7 @@ export function Contact() {
                 transition={{
                   delay: isMobile ? 0 : index * 0.1,
                   duration: isMobile ? 0.2 : 0.4,
+                  ease: 'easeInOut', // ✅ type-safe
                 }}
                 viewport={{ once: true }}
               >
@@ -267,10 +273,8 @@ export function Contact() {
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    {...(!isMobile && {
-                      whileHover: { scale: 1.05 },
-                      whileTap: { scale: 0.95 },
-                    })}
+                    whileHover={!isMobile ? { scale: 1.05 } : undefined}
+                    whileTap={!isMobile ? { scale: 0.95 } : undefined}
                   >
                     <social.icon className="w-4 h-4 md:w-5 md:h-5 md:mr-2" />
                     <span className="hidden md:inline">{social.label}</span>
@@ -287,6 +291,7 @@ export function Contact() {
           transition={{
             delay: isMobile ? 0 : 0.4,
             duration: isMobile ? 0.3 : 0.6,
+            ease: 'easeInOut',
           }}
           viewport={{ once: true }}
           className="text-center text-gray-600 text-xs md:text-sm mt-8 md:mt-12"

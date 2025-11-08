@@ -97,8 +97,11 @@ export function Chatbot() {
   return (
     <section className="min-h-screen flex items-center justify-center py-20 px-4 pb-32 relative bg-black">
       <div className="max-w-4xl mx-auto relative z-10 w-full h-[calc(100vh-10rem)]">
+        {/* Header */}
         <motion.div
-          {...anim.fadeInUp}
+          initial={anim.fadeInUp.initial}
+          animate={anim.fadeInUp.animate}
+          transition={anim.fadeInUp.transition}
           viewport={{ once: true }}
           className="text-center mb-6 md:mb-8"
         >
@@ -113,13 +116,14 @@ export function Chatbot() {
           </p>
         </motion.div>
 
+        {/* Chat Section */}
         <motion.div
           initial={{ opacity: 0, y: isMobile ? 0 : 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ 
+          transition={{
             delay: isMobile ? 0 : 0.2,
             duration: isMobile ? 0.3 : 0.8,
-            ease: [0.25, 0.1, 0.25, 1],
+            ease: 'easeInOut',
           }}
           viewport={{ once: true }}
           className="bg-gray-900/50 border border-gray-800 rounded-lg flex flex-col h-full"
@@ -132,17 +136,20 @@ export function Chatbot() {
                   key={message.id}
                   initial={{ opacity: 0, y: isMobile ? 0 : 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ 
+                  transition={{
                     duration: isMobile ? 0.2 : 0.4,
                     delay: isMobile ? 0 : index * 0.05,
+                    ease: 'easeInOut', // ✅ added
                   }}
                   className="flex gap-3 md:gap-4 items-start"
                 >
-                  <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-                    message.sender === 'bot' 
-                      ? 'bg-red-500/20 text-red-400' 
-                      : 'bg-gray-700 text-gray-300'
-                  }`}>
+                  <div
+                    className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+                      message.sender === 'bot'
+                        ? 'bg-red-500/20 text-red-400'
+                        : 'bg-gray-700 text-gray-300'
+                    }`}
+                  >
                     {message.sender === 'bot' ? (
                       <Bot className="w-4 h-4 md:w-5 md:h-5" />
                     ) : (
@@ -162,11 +169,12 @@ export function Chatbot() {
                   </div>
                 </motion.div>
               ))}
-              
+
               {isTyping && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
+                  transition={{ ease: 'easeInOut' }}
                   className="flex gap-3 md:gap-4 items-start"
                 >
                   <div className="flex-shrink-0 w-8 h-8 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center">
@@ -183,6 +191,7 @@ export function Chatbot() {
                 </motion.div>
               )}
 
+              {/* Suggested Questions */}
               {messages.length === 1 && (
                 <div className="space-y-3 mt-4">
                   <p className="text-xs md:text-sm text-gray-500">Suggested questions:</p>
@@ -192,13 +201,12 @@ export function Chatbot() {
                         key={i}
                         initial={{ opacity: 0, scale: isMobile ? 1 : 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        transition={{ 
+                        transition={{
                           delay: isMobile ? 0 : i * 0.1,
                           duration: isMobile ? 0.2 : 0.3,
+                          ease: 'easeInOut', // ✅ fixed
                         }}
-                        onClick={() => {
-                          setInput(question);
-                        }}
+                        onClick={() => setInput(question)}
                         className="text-left text-xs md:text-sm p-2 md:p-3 bg-gray-800/50 border border-gray-700 rounded-lg hover:border-red-500/50 hover:bg-gray-800 transition-all duration-200 text-gray-400"
                       >
                         {question}
@@ -216,7 +224,7 @@ export function Chatbot() {
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 placeholder="Ask about Jack's experience, skills, or projects..."
                 className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 flex-1 text-sm md:text-base"
               />

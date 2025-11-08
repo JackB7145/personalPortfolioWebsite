@@ -62,6 +62,14 @@
             "tailwindcss": "^4.1.17",
             "typescript": "5.9.3"
       },
+      "optionalDependencies": {
+            "@tailwindcss/oxide-linux-x64-gnu": "latest",
+            "lightningcss-linux-x64-gnu": "latest"
+      },
+
+      "engines": {
+            "node": "20.x"
+      },
       "scripts": {
             "dev": "next dev",
             "build": "next build",

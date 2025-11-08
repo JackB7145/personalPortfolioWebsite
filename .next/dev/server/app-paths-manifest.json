@@ -1,7 +1,0 @@
-{
-  "/api/experiences/route": "app/api/experiences/route.js",
-  "/api/personal-info/route": "app/api/personal-info/route.js",
-  "/api/projects/route": "app/api/projects/route.js",
-  "/api/skills/route": "app/api/skills/route.js",
-  "/page": "app/page.js"
-}

@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 46, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/Jack/Desktop/personalPortfolioWebsite/src/app/api/personal-info/route.ts"],"sourcesContent":["import { NextResponse } from 'next/server';\r\nexport async function GET() {\r\n  const personalInfo = {\r\n    name: 'Jack Branston',\r\n    title: 'Software Engineer',\r\n    bio: 'Building scalable applications with modern technologies. Passionate about clean code, system design, and creating exceptional user experiences.',\r\n    email: 'jbranston6@gmail.com',\r\n    location: 'London, ON',\r\n    github: 'https://github.com/JackB7145',\r\n    linkedin: 'https://linkedin.com/in/jack-branston',\r\n    discord: 'https://discordapp.com/users/766663343502131253',\r\n    school: 'University of Western Ontario',\r\n    degree: 'Bachelor of Software Engineering',\r\n    graduationYear: '2027',\r\n    photo: '/profilePicture.jpg'\r\n  };\r\n\r\n  return NextResponse.json(personalInfo);\r\n}\r\n"],"names":[],"mappings":";;;;AAAA;;AACO,eAAe;IACpB,MAAM,eAAe;QACnB,MAAM;QACN,OAAO;QACP,KAAK;QACL,OAAO;QACP,UAAU;QACV,QAAQ;QACR,UAAU;QACV,SAAS;QACT,QAAQ;QACR,QAAQ;QACR,gBAAgB;QAChB,OAAO;IACT;IAEA,OAAO,gJAAY,CAAC,IAAI,CAAC;AAC3B","debugId":null}}]
-}
