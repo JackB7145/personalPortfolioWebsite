@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { motion } from 'motion/react';
-import { Mail, Github, Linkedin, Twitter, Coffee, Calendar } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Mail, Github, Linkedin, Coffee, Calendar } from 'lucide-react';
+import { FaDiscord } from 'react-icons/fa'; 
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { useIsMobile } from './ui/use-mobile';
 import { getAnimationConfig } from '../lib/animations';
 
@@ -13,7 +14,7 @@ const personalInfo = {
   email: 'jack@jackbranston.com',
   github: 'https://github.com/jackbranston',
   linkedin: 'https://linkedin.com/in/jackbranston',
-  twitter: 'https://twitter.com/jackbranston',
+  discord: 'https://discordapp.com/users/766663343502131253', 
 };
 
 const availableTimeSlots = [
@@ -35,10 +36,11 @@ export function Contact() {
   const isMobile = useIsMobile();
   const anim = getAnimationConfig(isMobile);
 
+  // ✅ Updated to mix lucide + react-icons seamlessly
   const socialLinks = [
     { icon: Github, label: 'GitHub', href: personalInfo.github },
     { icon: Linkedin, label: 'LinkedIn', href: personalInfo.linkedin },
-    { icon: Twitter, label: 'Twitter', href: personalInfo.twitter },
+    { icon: FaDiscord, label: 'Discord', href: personalInfo.discord },
     { icon: Mail, label: 'Email', href: `mailto:${personalInfo.email}` },
   ];
 
@@ -47,9 +49,11 @@ export function Contact() {
       toast.error('Please fill in all fields and select a time slot');
       return;
     }
-    
-    const slot = availableTimeSlots.find(s => s.id === selectedSlot);
-    toast.success(`Coffee chat booked for ${slot?.date} at ${slot?.time}! Calendar invite sent to ${email}`);
+
+    const slot = availableTimeSlots.find((s) => s.id === selectedSlot);
+    toast.success(
+      `Coffee chat booked for ${slot?.date} at ${slot?.time}! Calendar invite sent to ${email}`
+    );
     setSelectedSlot(null);
     setName('');
     setEmail('');
@@ -60,7 +64,7 @@ export function Contact() {
       toast.error('Please fill in all fields');
       return;
     }
-    
+
     toast.success('Message sent! Jack will get back to you soon.');
     setName('');
     setEmail('');
@@ -86,16 +90,17 @@ export function Contact() {
           </p>
         </motion.div>
 
+        {/* Booking + Contact */}
         <div className="grid md:grid-cols-2 gap-6 md:gap-8 mb-8 md:mb-12">
           {/* Coffee Chat Booking */}
           <motion.div
             initial={{ opacity: 0, x: isMobile ? 0 : -30 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ 
+            transition={{
               duration: isMobile ? 0.3 : 0.6,
               ease: [0.25, 0.1, 0.25, 1],
             }}
-            viewport={{ once: true, margin: "-50px" }}
+            viewport={{ once: true, margin: '-50px' }}
           >
             <Card className="bg-gray-900/50 border-gray-800 h-full">
               <CardHeader>
@@ -117,7 +122,7 @@ export function Contact() {
                     className="bg-gray-800 border-gray-700 text-white text-sm"
                   />
                 </div>
-                
+
                 <div>
                   <label className="text-xs md:text-sm text-gray-400 mb-2 block">Your Email</label>
                   <Input
@@ -169,11 +174,11 @@ export function Contact() {
           <motion.div
             initial={{ opacity: 0, x: isMobile ? 0 : 30 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ 
+            transition={{
               duration: isMobile ? 0.3 : 0.6,
               ease: [0.25, 0.1, 0.25, 1],
             }}
-            viewport={{ once: true, margin: "-50px" }}
+            viewport={{ once: true, margin: '-50px' }}
           >
             <Card className="bg-gray-900/50 border-gray-800 h-full">
               <CardHeader>
@@ -195,7 +200,7 @@ export function Contact() {
                     className="bg-gray-800 border-gray-700 text-white text-sm"
                   />
                 </div>
-                
+
                 <div>
                   <label className="text-xs md:text-sm text-gray-400 mb-2 block">Your Email</label>
                   <Input
@@ -232,7 +237,7 @@ export function Contact() {
         <motion.div
           initial={{ opacity: 0, y: isMobile ? 0 : 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ 
+          transition={{
             delay: isMobile ? 0 : 0.2,
             duration: isMobile ? 0.3 : 0.6,
           }}
@@ -246,7 +251,7 @@ export function Contact() {
                 key={social.label}
                 initial={{ opacity: 0, scale: isMobile ? 1 : 0.8 }}
                 whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ 
+                transition={{
                   delay: isMobile ? 0 : index * 0.1,
                   duration: isMobile ? 0.2 : 0.4,
                 }}
@@ -254,7 +259,7 @@ export function Contact() {
               >
                 <Button
                   variant="outline"
-                  size={isMobile ? "default" : "lg"}
+                  size={isMobile ? 'default' : 'lg'}
                   className="border-gray-700 bg-gray-800/50 text-gray-300 hover:bg-gray-700 hover:border-red-500/50 transition-all duration-300"
                   asChild
                 >
@@ -279,7 +284,7 @@ export function Contact() {
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          transition={{ 
+          transition={{
             delay: isMobile ? 0 : 0.4,
             duration: isMobile ? 0.3 : 0.6,
           }}

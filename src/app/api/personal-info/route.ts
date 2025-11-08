@@ -1,22 +1,18 @@
 import { NextResponse } from 'next/server';
-
 export async function GET() {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 100));
-
   const personalInfo = {
-    name: 'JACK BRANSTON',
-    title: 'Software Developer',
+    name: 'Jack Branston',
+    title: 'Software Engineer',
     bio: 'Building scalable applications with modern technologies. Passionate about clean code, system design, and creating exceptional user experiences.',
-    email: 'jack@jackbranston.com',
-    phone: '+1 (555) 123-4567',
-    location: 'Toronto, ON',
-    github: 'https://github.com/jackbranston',
-    linkedin: 'https://linkedin.com/in/jackbranston',
-    twitter: 'https://twitter.com/jackbranston',
-    school: 'University of Toronto',
-    degree: 'Bachelor of Computer Science',
-    graduationYear: '2024',
+    email: 'jbranston6@gmail.com',
+    location: 'London, ON',
+    github: 'https://github.com/JackB7145',
+    linkedin: 'https://linkedin.com/in/jack-branston',
+    discord: 'https://discordapp.com/users/766663343502131253',
+    school: 'University of Western Ontario',
+    degree: 'Bachelor of Software Engineering',
+    graduationYear: '2027',
+    photo: '/profilePicture.jpg'
   };
 
   return NextResponse.json(personalInfo);

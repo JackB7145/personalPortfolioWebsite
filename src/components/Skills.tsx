@@ -1,46 +1,16 @@
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { Badge } from './ui/badge';
 import { SkillCard } from '../lib/cardTypes';
 import { useIsMobile } from './ui/use-mobile';
 import { getAnimationConfig } from '../lib/animations';
 
-const skillsData = [
-  {
-    id: '1',
-    category: 'Languages',
-    skills: ['TypeScript', 'JavaScript', 'Python', 'Java', 'Go', 'SQL'],
-  },
-  {
-    id: '2',
-    category: 'Frontend',
-    skills: ['React', 'Next.js', 'Vue.js', 'TailwindCSS', 'Redux', 'Motion'],
-  },
-  {
-    id: '3',
-    category: 'Backend',
-    skills: ['Node.js', 'Express', 'FastAPI', 'Django', 'GraphQL', 'REST'],
-  },
-  {
-    id: '4',
-    category: 'Databases',
-    skills: ['PostgreSQL', 'MongoDB', 'Redis', 'MySQL', 'Firebase'],
-  },
-  {
-    id: '5',
-    category: 'DevOps',
-    skills: ['Docker', 'Kubernetes', 'AWS', 'CI/CD', 'GitHub Actions', 'Terraform'],
-  },
-  {
-    id: '6',
-    category: 'Tools',
-    skills: ['Git', 'VS Code', 'Postman', 'Figma', 'Jira', 'Slack'],
-  },
-];
-
-export function Skills() {
+export function Skills({skillsData}: {skillsData: any[]}) {
   const isMobile = useIsMobile();
   const anim = getAnimationConfig(isMobile);
-
+  if (!skillsData || skillsData.length === 0) {
+    return <div>Loading...</div>;
+  }
+  
   const skills = skillsData.map((skill) => new SkillCard(
     skill.id,
     skill.category,

@@ -8,7 +8,7 @@ A modern, dark-themed portfolio website with a Star Wars-inspired aesthetic, fea
 - **Dramatic Scroll-Reveal Animation**: Red curtains part as you scroll to reveal content
 - **API-Driven Architecture**: All data fetched from Next.js API routes
 - **Object-Oriented Design**: Uses TypeScript classes with polymorphism for cards
-- **Smooth Animations**: Motion/React animations optimized for desktop, simplified for mobile
+- **Smooth Animations**: framer-motion animations optimized for desktop, simplified for mobile
 - **Responsive Design**: Fully responsive with mobile-specific optimizations
 - **Interactive Components**:
   - Dynamic project showcase with modal details

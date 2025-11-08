@@ -1,4 +1,4 @@
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { useIsMobile } from './ui/use-mobile';
 

@@ -1,14 +1,33 @@
-import type { Metadata } from 'next';
+'use client';
 import { Orbitron } from 'next/font/google';
-import '../styles/globals.css';
+import './globals.css';
 import { Toaster } from '../components/ui/sonner';
+import { DataProvider } from './contexts/DataContext'; 
 
-const orbitron = Orbitron({ subsets: ['latin'] });
+import { Poppins } from 'next/font/google';
+import { Rubik } from 'next/font/google';
+import { Space_Grotesk } from 'next/font/google';
 
-export const metadata: Metadata = {
-  title: 'Jack Branston - Portfolio',
-  description: 'Software Developer Portfolio - Dark Side Star Wars Theme',
-};
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-poppins',
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  variable: '--font-space-grotesk',
+});
+
+const rubik = Rubik({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  variable: '--font-rubik',
+});
+
+
+
 
 export default function RootLayout({
   children,
@@ -17,9 +36,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={orbitron.className}>
-        {children}
-        <Toaster position="bottom-right" />
+      <body className={poppins.className}>
+        <DataProvider>
+          {children}
+          <Toaster position="bottom-right" />
+        </DataProvider>
       </body>
     </html>
   );

@@ -1,16 +1,17 @@
-'use client';
-
-import { motion } from "motion/react";
-import { personalInfo } from "../lib/dummyData";
+import { motion } from "framer-motion";
 import { GraduationCap } from "lucide-react";
 import { useIsMobile } from "./ui/use-mobile";
 import { getAnimationConfig } from "../lib/animations";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { useContext, useEffect, useState } from "react";
 
-export function Hero() {
+export function Hero({personalInfo}: {personalInfo: any}) {
   const isMobile = useIsMobile();
   const anim = getAnimationConfig(isMobile);
-
+  if (!personalInfo) {
+    return <div>Loading...</div>;
+  }
+  
   return (
     <>
       {/* === Spacer Section === */}
