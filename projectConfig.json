@@ -1,0 +1,26 @@
+{
+  "name": "Personal Portfolio Website",
+  "description": "Dynamic, data-driven developer portfolio built with Next.js, TypeScript, and TailwindCSS.",
+  "fullDescription": "This portfolio website serves as a living, data-driven profile that automatically updates its content from external platforms like GitHub and LinkedIn. Built with Next.js, TypeScript, and TailwindCSS, the architecture emphasizes modularity and decoupling — every project, experience, and metric is fetched dynamically through APIs rather than being hardcoded. The frontend remains lightweight and reactive, adapting to real-time data changes while maintaining consistent visual identity and performance. The site integrates with Vercel for deployment and GitHub for live project synchronization, enabling a hands-free, self-updating showcase of ongoing development work.",
+  "techStack": [
+    "Next.js",
+    "React",
+    "TypeScript",
+    "JavaScript",
+    "TailwindCSS",
+    "Vercel"
+  ],
+  "features": [
+    "Dynamic data fetching from GitHub and LinkedIn APIs",
+    "Decoupled architecture separating presentation from data sources",
+    "Modular React components with clean data pipelines",
+    "Real-time project synchronization using GitHub REST APIs",
+    "Automated content population for experiences, skills, and repositories",
+    "Deployed and continuously integrated via Vercel"
+  ],
+  "metrics": {
+    "commits": "32",
+    "pullRequests": "7",
+    "linesOfCode": "~8,500"
+  }
+}
