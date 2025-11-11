@@ -48,8 +48,8 @@ export default function Home() {
 
       <div style={{ opacity: scrollProgress }}>
         <Hero personalInfo={personalInfo} />
-        <Projects projectsData={projects} />
         <Experience experiencesData={experiences} />
+        <Projects projectsData={projects} />
         <Skills skillsData={skills} />
         <Chatbot />
         <Contact />
