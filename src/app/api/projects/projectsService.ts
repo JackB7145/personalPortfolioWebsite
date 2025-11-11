@@ -1,36 +1,42 @@
-import {GITHUB_TOKEN} from '@/env'
+import { GITHUB_TOKEN } from '@/env'
 
-export interface CommitInfo {
-  sha: string;
-  message: string;
-  author?: string;
-  date?: string;
-  url: string;
+export interface ProjectConfig {
+  name?: string
+  description?: string
+  fullDescription?: string
+  techStack?: string[]
+  features?: string[]
+  metrics?: {
+    commits?: string | number
+    pullRequests?: string | number
+    linesOfCode?: string
+  }
 }
 
 export interface ProjectData {
-  id: string;
-  name: string;
-  description: string | null;
-  fullDescription: string;
-  techStack: string[];
-  stars: number;
-  forks: number;
-  url: string;
-  features: string[];
+  id: string
+  name: string
+  description: string | null
+  fullDescription: string
+  techStack: string[]
+  stars: number
+  forks: number
+  url: string
+  features: string[]
   metrics: {
-    commits: string | number;
-    pullRequests: string | number;
-    linesOfCode: string;
-  };
-  commitHistory: CommitInfo[];
+    commits: string | number
+    pullRequests: string | number
+    linesOfCode: string
+  }
 }
 
-const GITHUB_API = 'https://api.github.com';
-const username = 'JackB7145';
-const token = GITHUB_TOKEN;
+const GITHUB_API = 'https://api.github.com'
+const username = 'JackB7145'
+const token = GITHUB_TOKEN
 
-// Helper for authenticated fetches
+// ─────────────────────────────────────────────
+// Base GitHub fetch helper
+// ─────────────────────────────────────────────
 async function githubFetch(endpoint: string) {
   const res = await fetch(`${GITHUB_API}${endpoint}`, {
     headers: {
@@ -38,68 +44,74 @@ async function githubFetch(endpoint: string) {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     next: { revalidate: 120 },
-  });
+  })
 
-  if (!res.ok) throw new Error(`GitHub API error: ${res.status} for ${endpoint}`);
-  return res.json();
+  if (!res.ok) throw new Error(`GitHub API error: ${res.status} for ${endpoint}`)
+  return res.json()
 }
 
-// Fetch most recent commits for a repo
-async function getCommitHistory(owner: string, repo: string, perPage = 5): Promise<CommitInfo[]> {
+// ─────────────────────────────────────────────
+// Get projectConfig.json from root (optional)
+// ─────────────────────────────────────────────
+async function getProjectConfig(owner: string, repo: string): Promise<ProjectConfig | null> {
   try {
-    const data = await githubFetch(`/repos/${owner}/${repo}/commits?per_page=${perPage}`);
-    return data.map((c: any) => ({
-      sha: c.sha,
-      message: c.commit.message,
-      author: c.commit.author?.name,
-      date: c.commit.author?.date,
-      url: c.html_url,
-    }));
+    const res = await githubFetch(`/repos/${owner}/${repo}/contents/projectConfig.json`)
+    if (!res?.content) return null
+
+    const jsonStr = Buffer.from(res.content, 'base64').toString('utf8')
+    return JSON.parse(jsonStr)
   } catch {
-    return [];
+    // Repo likely has no projectConfig.json
+    return null
   }
 }
 
-// Fetch approximate lines of code from /languages endpoint
+// ─────────────────────────────────────────────
+// Get line count (approx) via /languages
+// ─────────────────────────────────────────────
 async function getLinesOfCode(owner: string, repo: string): Promise<string> {
   try {
-    const data = await githubFetch(`/repos/${owner}/${repo}/languages`);
-    const total = Object.values(data).reduce((sum: number, val: any) => sum + val, 0);
-    return `~${total.toLocaleString()} LOC`;
+    const data = await githubFetch(`/repos/${owner}/${repo}/languages`)
+    const total = Object.values(data).reduce((sum: number, val: any) => sum + val, 0)
+    return `~${total.toLocaleString()} LOC`
   } catch {
-    return '~N/A';
+    return '~N/A'
   }
 }
 
+// ─────────────────────────────────────────────
+// Main controller — no commit history
+// ─────────────────────────────────────────────
 export async function getStarredProjects(): Promise<ProjectData[]> {
-  const starredRepos = await githubFetch(`/users/${username}/starred`);
+  const starredRepos = await githubFetch(`/users/${username}/starred?sort=updated&direction=desc`)
 
   const projects = await Promise.all(
     starredRepos.map(async (repo: any) => {
-      const [commitHistory, linesOfCode] = await Promise.all([
-        getCommitHistory(repo.owner.login, repo.name),
+      const [config, linesOfCode] = await Promise.all([
+        getProjectConfig(repo.owner.login, repo.name),
         getLinesOfCode(repo.owner.login, repo.name),
-      ]);
+      ])
+
+      const metrics = config?.metrics || {
+        commits: '-',
+        pullRequests: repo.open_issues_count ?? 0,
+        linesOfCode,
+      }
 
       return {
         id: repo.id.toString(),
-        name: repo.name,
-        description: repo.description,
-        fullDescription: repo.description || '',
-        techStack: [repo.language || 'Unknown'],
+        name: config?.name || repo.name,
+        description: config?.description || repo.description,
+        fullDescription: config?.fullDescription || repo.description || '',
+        techStack: config?.techStack || [repo.language || 'Unknown'],
         stars: repo.stargazers_count,
         forks: repo.forks_count,
         url: repo.html_url,
-        features: [],
-        metrics: {
-          commits: commitHistory.length,
-          pullRequests: repo.open_issues_count ?? 0,
-          linesOfCode,
-        },
-        commitHistory,
-      };
+        features: config?.features || [],
+        metrics,
+      }
     })
-  );
+  )
 
-  return projects;
+  return projects
 }

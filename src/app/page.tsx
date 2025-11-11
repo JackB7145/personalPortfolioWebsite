@@ -42,7 +42,6 @@ export default function Home() {
   }
 
   const { personalInfo, projects, experiences, skills } = portfolioData;
-  console.log(experiences)
   return (
     <main className="bg-black min-h-screen">
       <ScrollReveal progress={scrollProgress} />
