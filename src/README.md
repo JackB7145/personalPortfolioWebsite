@@ -33,6 +33,7 @@ The application uses Next.js 13+ App Router architecture:
     ├── projects/
     ├── experiences/
     ├── skills/
+    ├── chatbot/
     └── time-slots/
 ```
 
