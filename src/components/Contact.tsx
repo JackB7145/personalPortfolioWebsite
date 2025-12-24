@@ -53,7 +53,7 @@ export function Contact() {
     { icon: Mail, label: 'Email', href: `mailto:${personalInfo.email}` },
   ];
 
-  const handleSendCalenderHold = async(name: string, email: string, timeSlot: ITimeSlot): Promise<Response> => {
+  const handleSendCalendarHold = async(name: string, email: string, timeSlot: ITimeSlot): Promise<Response> => {
     const res = await fetch('/api/<myEndpoint>', {
         method: 'POST',
         headers: {
@@ -70,7 +70,7 @@ export function Contact() {
   }
 
   // useEffect(()=>{
-  //   const getCalenderHolds = async() => {
+  //   const getCalendarHolds = async() => {
   //       const res = await fetch('/api/<myEndpoint>', {
   //       method: 'POST',
   //       headers: {
@@ -79,7 +79,7 @@ export function Contact() {
   //       body: JSON.stringify({ }),
   //     })
   //   }
-  //   getCalenderHolds()
+  //   getCalendarHolds()
   // }, [])
 
   const handleBookCoffeeChat = async() => {
@@ -90,7 +90,7 @@ export function Contact() {
 
     const slot = timeSlots.find((s) => s.id === selectedSlot);
 
-    const res = await handleSendCalenderHold(name, email, slot)
+    const res = await handleSendCalendarHold(name, email, slot)
     if (res.ok){
       
       setTimeSlots(prev =>
@@ -106,7 +106,7 @@ export function Contact() {
       );
     } else{
       toast.warning(
-        'Coffee chat calender hold failed to book. Try again soon.'
+        'Coffee chat calendar hold failed to book. Try again soon.'
       )
     }
     
