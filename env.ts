@@ -6,3 +6,7 @@ export const SYSTEM_INSTRUCTIONS = process.env.SYSTEM_INSTRUCTIONS || '';
 export const PINECONE_API_KEY = process.env.PINECONE_API_KEY || '';
 export const PINECONE_INDEX = process.env.PINECONE_INDEX || '';
 export const PINECONE_NAMESPACE = process.env.PINECONE_NAMESPACE || '';
+export const MAILGUN_KEY = process.env.MAILGUN_KEY || '';
+export const MAILGUN_DOMAIN = process.env.MAILGUN_DOMAIN || '';
+export const MY_EMAIL = process.env.MY_EMAIL || '';
+export const CALENDER_API_KEY = process.env.CALENDER_API_KEY || '';

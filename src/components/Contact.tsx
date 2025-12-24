@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Github, Linkedin, Coffee, Calendar } from 'lucide-react';
 import { FaDiscord } from 'react-icons/fa';
@@ -12,23 +12,19 @@ import { toast } from 'sonner';
 import { useIsMobile } from './ui/use-mobile';
 import { getAnimationConfig } from '../lib/animations';
 
+interface ITimeSlot {
+  id: string,
+  date: string,
+  time: string, 
+  available: boolean
+}
+
 const personalInfo = {
-  email: 'jack@jackbranston.com',
+  email: 'jbranston6@gmail.com',
   github: 'https://github.com/jackbranston',
   linkedin: 'https://linkedin.com/in/jackbranston',
   discord: 'https://discordapp.com/users/766663343502131253',
 };
-
-const availableTimeSlots = [
-  { id: '1', date: 'Nov 5', time: '10:00 AM', available: true },
-  { id: '2', date: 'Nov 5', time: '2:00 PM', available: false },
-  { id: '3', date: 'Nov 6', time: '11:00 AM', available: true },
-  { id: '4', date: 'Nov 6', time: '3:00 PM', available: true },
-  { id: '5', date: 'Nov 7', time: '9:00 AM', available: false },
-  { id: '6', date: 'Nov 7', time: '1:00 PM', available: true },
-  { id: '7', date: 'Nov 8', time: '10:00 AM', available: true },
-  { id: '8', date: 'Nov 8', time: '4:00 PM', available: false },
-];
 
 export function Contact() {
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
@@ -37,6 +33,18 @@ export function Contact() {
   const [message, setMessage] = useState('');
   const isMobile = useIsMobile();
   const anim = getAnimationConfig(isMobile);
+  const [timeSlots, setTimeSlots] = useState<ITimeSlot[]>(
+    [
+      { id: '1', date: 'Nov 5', time: '10:00 AM', available: true },
+      { id: '2', date: 'Nov 5', time: '2:00 PM', available: false },
+      { id: '3', date: 'Nov 6', time: '11:00 AM', available: true },
+      { id: '4', date: 'Nov 6', time: '3:00 PM', available: true },
+      { id: '5', date: 'Nov 7', time: '9:00 AM', available: false },
+      { id: '6', date: 'Nov 7', time: '1:00 PM', available: true },
+      { id: '7', date: 'Nov 8', time: '10:00 AM', available: true },
+      { id: '8', date: 'Nov 8', time: '4:00 PM', available: false },
+    ]
+  )
 
   const socialLinks = [
     { icon: Github, label: 'GitHub', href: personalInfo.github },
@@ -45,31 +53,90 @@ export function Contact() {
     { icon: Mail, label: 'Email', href: `mailto:${personalInfo.email}` },
   ];
 
-  const handleBookCoffeeChat = () => {
+  const handleSendCalenderHold = async(name: string, email: string, timeSlot: ITimeSlot): Promise<Response> => {
+    const res = await fetch('/api/<myEndpoint>', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          date: timeSlot.date,
+          time: timeSlot.time,
+        }),
+      })
+      return res
+  }
+
+  // useEffect(()=>{
+  //   const getCalenderHolds = async() => {
+  //       const res = await fetch('/api/<myEndpoint>', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({ }),
+  //     })
+  //   }
+  //   getCalenderHolds()
+  // }, [])
+
+  const handleBookCoffeeChat = async() => {
     if (!selectedSlot || !name || !email) {
       toast.error('Please fill in all fields and select a time slot');
       return;
     }
 
-    const slot = availableTimeSlots.find((s) => s.id === selectedSlot);
-    toast.success(
-      `Coffee chat booked for ${slot?.date} at ${slot?.time}! Calendar invite sent to ${email}`
-    );
+    const slot = timeSlots.find((s) => s.id === selectedSlot);
+
+    const res = await handleSendCalenderHold(name, email, slot)
+    if (res.ok){
+      
+      setTimeSlots(prev =>
+        prev.map((slot: ITimeSlot) =>
+          slot.id === selectedSlot
+            ? { ...slot, available: false }
+            : slot
+        )
+      )
+
+      toast.success(
+        `Coffee chat booked for ${slot?.date} at ${slot?.time}! Calendar invite sent to ${email}`
+      );
+    } else{
+      toast.warning(
+        'Coffee chat calender hold failed to book. Try again soon.'
+      )
+    }
+    
     setSelectedSlot(null);
     setName('');
     setEmail('');
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async() => {
     if (!name || !email || !message) {
       toast.error('Please fill in all fields');
       return;
     }
 
-    toast.success('Message sent! Jack will get back to you soon.');
-    setName('');
-    setEmail('');
-    setMessage('');
+    const res = await fetch('/api/sendEmail', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name, email, message }),
+    })
+
+    if (res.ok){
+      toast.success('Message sent! Jack will get back to you soon.');
+      setName('');
+      setEmail('');
+      setMessage('');
+    } else {
+      toast.warning('Message Failed To Send! Try again soon')
+    }
   };
 
   return (
@@ -141,7 +208,7 @@ export function Contact() {
                     Available Time Slots
                   </label>
                   <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
-                    {availableTimeSlots.map((slot) => (
+                    {timeSlots.map((slot) => (
                       <button
                         key={slot.id}
                         onClick={() => slot.available && setSelectedSlot(slot.id)}
@@ -302,3 +369,4 @@ export function Contact() {
     </section>
   );
 }
+

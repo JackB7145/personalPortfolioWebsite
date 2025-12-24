@@ -1,8 +1,4 @@
 {
-  "/page": "app/page.js",
-  "/api/personal-info/route": "app/api/personal-info/route.js",
-  "/api/projects/route": "app/api/projects/route.js",
-  "/api/experiences/route": "app/api/experiences/route.js",
-  "/api/skills/route": "app/api/skills/route.js",
-  "/api/chatbot/route": "app/api/chatbot/route.js"
+  "/_not-found/page": "app/_not-found/page.js",
+  "/page": "app/page.js"
 }
