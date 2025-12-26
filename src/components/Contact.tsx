@@ -171,74 +171,49 @@ export function Contact() {
             }}
             viewport={{ once: true, margin: '-50px' }}
           >
-            <Card className="bg-gray-900/50 border-gray-800 h-full">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-red-500 text-lg md:text-xl">
-                  <Coffee className="w-4 h-4 md:w-5 md:h-5" />
-                  Book a Coffee Chat
-                </CardTitle>
-                <CardDescription className="text-gray-400 text-xs md:text-sm">
-                  Schedule a 30-minute video call. Times sync with Google Calendar.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="text-xs md:text-sm text-gray-400 mb-2 block">Your Name</label>
-                  <Input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="John Doe"
-                    className="bg-gray-800 border-gray-700 text-white text-sm"
-                  />
-                </div>
+<Card className="bg-gray-900/50 border-gray-800 h-full">
+  <CardHeader>
+    <CardTitle className="flex items-center gap-2 text-red-500 text-lg md:text-xl">
+      <Coffee className="w-4 h-4 md:w-5 md:h-5" />
+      Book a Coffee Chat
+    </CardTitle>
+    <CardDescription className="text-gray-400 text-xs md:text-sm">
+      Schedule a 15–30 minute coffee chat via Google Calendar.
+    </CardDescription>
+  </CardHeader>
 
-                <div>
-                  <label className="text-xs md:text-sm text-gray-400 mb-2 block">Your Email</label>
-                  <Input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="john@example.com"
-                    className="bg-gray-800 border-gray-700 text-white text-sm"
-                  />
-                </div>
+  <CardContent className="space-y-4">
+    <div className="text-xs md:text-sm text-gray-400 leading-relaxed">
+      Connect and chat casually over coffee! This is a great opportunity to:
+      <ul className="list-disc list-inside mt-2 space-y-1">
+        <li>Discuss new ideas or projects.</li>
+        <li>Share experiences and advice.</li>
+        <li>Explore collaboration opportunities.</li>
+        <li>Ask questions or get mentorship guidance.</li>
+      </ul>
+    </div>
 
-                <div>
-                  <label className="text-xs md:text-sm text-gray-400 mb-2 block">
-                    Available Time Slots
-                  </label>
-                  <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
-                    {timeSlots.map((slot) => (
-                      <button
-                        key={slot.id}
-                        onClick={() => slot.available && setSelectedSlot(slot.id)}
-                        disabled={!slot.available}
-                        className={`p-2 md:p-3 rounded border text-xs transition-all ${
-                          selectedSlot === slot.id
-                            ? 'bg-red-500/20 border-red-500 text-red-400'
-                            : slot.available
-                            ? 'bg-gray-800 border-gray-700 text-gray-300 hover:border-gray-600'
-                            : 'bg-gray-800/50 border-gray-800 text-gray-600 cursor-not-allowed'
-                        }`}
-                      >
-                        <div className="flex items-center gap-1 justify-center">
-                          <Calendar className="w-3 h-3" />
-                          <span>{slot.date}</span>
-                        </div>
-                        <div className="text-xs mt-1">{slot.time}</div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
+    <div className="text-xs md:text-sm text-gray-400 leading-relaxed">
+      Make sure to choose a time that works for you. Once booked, you'll get an email confirmation with the calendar invite.
+    </div>
 
-                <Button
-                  onClick={handleBookCoffeeChat}
-                  className="w-full bg-red-500 hover:bg-red-600 text-white text-sm"
-                >
-                  Book Coffee Chat
-                </Button>
-              </CardContent>
-            </Card>
+    <Button
+      onClick={() => {
+        const googleCalendarLink =
+          'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ2CjYTQUUKUuWAyfVIawec_JGaY49dmelTOJwMHS0ZSRmtoc1BHFnRsl0QsQpFjWHbVs9Fri1Mi';
+        window.open(googleCalendarLink, '_blank', 'noopener,noreferrer');
+      }}
+      className="w-full bg-red-500 hover:bg-red-600 text-white text-sm"
+    >
+      Book Coffee Chat
+    </Button>
+
+    <div className="text-gray-500 text-xs mt-2">
+      Tip: Have a few topics or questions ready to make the most of your coffee chat.
+    </div>
+  </CardContent>
+</Card>
+
           </motion.div>
 
           {/* Contact Form */}
