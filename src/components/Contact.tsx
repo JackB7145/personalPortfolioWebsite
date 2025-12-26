@@ -21,7 +21,7 @@ interface ITimeSlot {
 
 const personalInfo = {
   email: 'jbranston6@gmail.com',
-  github: 'https://github.com/jackbranston',
+  github: 'https://github.com/JackB7145',
   linkedin: 'https://linkedin.com/in/jackbranston',
   discord: 'https://discordapp.com/users/766663343502131253',
 };
@@ -33,19 +33,6 @@ export function Contact() {
   const [message, setMessage] = useState('');
   const isMobile = useIsMobile();
   const anim = getAnimationConfig(isMobile);
-  const [timeSlots, setTimeSlots] = useState<ITimeSlot[]>(
-    [
-      { id: '1', date: 'Nov 5', time: '10:00 AM', available: true },
-      { id: '2', date: 'Nov 5', time: '2:00 PM', available: false },
-      { id: '3', date: 'Nov 6', time: '11:00 AM', available: true },
-      { id: '4', date: 'Nov 6', time: '3:00 PM', available: true },
-      { id: '5', date: 'Nov 7', time: '9:00 AM', available: false },
-      { id: '6', date: 'Nov 7', time: '1:00 PM', available: true },
-      { id: '7', date: 'Nov 8', time: '10:00 AM', available: true },
-      { id: '8', date: 'Nov 8', time: '4:00 PM', available: false },
-    ]
-  )
-
   const socialLinks = [
     { icon: Github, label: 'GitHub', href: personalInfo.github },
     { icon: Linkedin, label: 'LinkedIn', href: personalInfo.linkedin },
@@ -53,67 +40,6 @@ export function Contact() {
     { icon: Mail, label: 'Email', href: `mailto:${personalInfo.email}` },
   ];
 
-  const handleSendCalendarHold = async(name: string, email: string, timeSlot: ITimeSlot): Promise<Response> => {
-    const res = await fetch('/api/<myEndpoint>', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          date: timeSlot.date,
-          time: timeSlot.time,
-        }),
-      })
-      return res
-  }
-
-  // useEffect(()=>{
-  //   const getCalendarHolds = async() => {
-  //       const res = await fetch('/api/<myEndpoint>', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({ }),
-  //     })
-  //   }
-  //   getCalendarHolds()
-  // }, [])
-
-  const handleBookCoffeeChat = async() => {
-    if (!selectedSlot || !name || !email) {
-      toast.error('Please fill in all fields and select a time slot');
-      return;
-    }
-
-    const slot = timeSlots.find((s) => s.id === selectedSlot);
-
-    const res = await handleSendCalendarHold(name, email, slot)
-    if (res.ok){
-      
-      setTimeSlots(prev =>
-        prev.map((slot: ITimeSlot) =>
-          slot.id === selectedSlot
-            ? { ...slot, available: false }
-            : slot
-        )
-      )
-
-      toast.success(
-        `Coffee chat booked for ${slot?.date} at ${slot?.time}! Calendar invite sent to ${email}`
-      );
-    } else{
-      toast.warning(
-        'Coffee chat calendar hold failed to book. Try again soon.'
-      )
-    }
-    
-    setSelectedSlot(null);
-    setName('');
-    setEmail('');
-  };
 
   const handleSendMessage = async() => {
     if (!name || !email || !message) {
@@ -171,48 +97,48 @@ export function Contact() {
             }}
             viewport={{ once: true, margin: '-50px' }}
           >
-<Card className="bg-gray-900/50 border-gray-800 h-full">
-  <CardHeader>
-    <CardTitle className="flex items-center gap-2 text-red-500 text-lg md:text-xl">
-      <Coffee className="w-4 h-4 md:w-5 md:h-5" />
-      Book a Coffee Chat
-    </CardTitle>
-    <CardDescription className="text-gray-400 text-xs md:text-sm">
-      Schedule a 15–30 minute coffee chat via Google Calendar.
-    </CardDescription>
-  </CardHeader>
+          <Card className="bg-gray-900/50 border-gray-800 h-full">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-red-500 text-lg md:text-xl">
+                <Coffee className="w-4 h-4 md:w-5 md:h-5" />
+                Book a Coffee Chat
+              </CardTitle>
+              <CardDescription className="text-gray-400 text-xs md:text-sm">
+                Schedule a 15–30 minute coffee chat via Google Calendar.
+              </CardDescription>
+            </CardHeader>
 
-  <CardContent className="space-y-4">
-    <div className="text-xs md:text-sm text-gray-400 leading-relaxed">
-      Connect and chat casually over coffee! This is a great opportunity to:
-      <ul className="list-disc list-inside mt-2 space-y-1">
-        <li>Discuss new ideas or projects.</li>
-        <li>Share experiences and advice.</li>
-        <li>Explore collaboration opportunities.</li>
-        <li>Ask questions or get mentorship guidance.</li>
-      </ul>
-    </div>
+            <CardContent className="space-y-4">
+              <div className="text-xs md:text-sm text-gray-400 leading-relaxed">
+                Connect and chat casually over coffee! This is a great opportunity to:
+                <ul className="list-disc list-inside mt-2 space-y-1">
+                  <li>Discuss new ideas or projects.</li>
+                  <li>Share experiences and advice.</li>
+                  <li>Explore collaboration opportunities.</li>
+                  <li>Ask questions or get mentorship guidance.</li>
+                </ul>
+              </div>
 
-    <div className="text-xs md:text-sm text-gray-400 leading-relaxed">
-      Make sure to choose a time that works for you. Once booked, you'll get an email confirmation with the calendar invite.
-    </div>
+              <div className="text-xs md:text-sm text-gray-400 leading-relaxed">
+                Make sure to choose a time that works for you. Once booked, you'll get an email confirmation with the calendar invite.
+              </div>
 
-    <Button
-      onClick={() => {
-        const googleCalendarLink =
-          'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ2CjYTQUUKUuWAyfVIawec_JGaY49dmelTOJwMHS0ZSRmtoc1BHFnRsl0QsQpFjWHbVs9Fri1Mi';
-        window.open(googleCalendarLink, '_blank', 'noopener,noreferrer');
-      }}
-      className="w-full bg-red-500 hover:bg-red-600 text-white text-sm"
-    >
-      Book Coffee Chat
-    </Button>
+              <Button
+                onClick={() => {
+                  const googleCalendarLink =
+                    'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ2CjYTQUUKUuWAyfVIawec_JGaY49dmelTOJwMHS0ZSRmtoc1BHFnRsl0QsQpFjWHbVs9Fri1Mi';
+                  window.open(googleCalendarLink, '_blank', 'noopener,noreferrer');
+                }}
+                className="w-full bg-red-500 hover:bg-red-600 text-white text-sm"
+              >
+                Book Coffee Chat
+              </Button>
 
-    <div className="text-gray-500 text-xs mt-2">
-      Tip: Have a few topics or questions ready to make the most of your coffee chat.
-    </div>
-  </CardContent>
-</Card>
+              <div className="text-gray-500 text-xs mt-2">
+                Tip: Have a few topics or questions ready to make the most of your coffee chat.
+              </div>
+            </CardContent>
+          </Card>
 
           </motion.div>
 
