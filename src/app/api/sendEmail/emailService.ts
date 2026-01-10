@@ -1,6 +1,23 @@
-import { MAILGUN_KEY, MAILGUN_DOMAIN, MY_EMAIL} from "@/env"
+import FormData from "form-data"
+import Mailgun from "mailgun.js"
+import { MAILGUN_KEY, MAILGUN_DOMAIN, MY_EMAIL } from "@/env"
 
-export const sendEmail = async ({ name, email, message }) => {
+const mailgun = new Mailgun(FormData)
+
+const mg = mailgun.client({
+  username: "api",
+  key: MAILGUN_KEY,
+})
+
+export const sendEmail = async ({
+  name,
+  email,
+  message,
+}: {
+  name: string
+  email: string
+  message: string
+}) => {
   if (!name || !email || !message) {
     throw new Error("Missing required fields")
   }
@@ -64,30 +81,12 @@ export const sendEmail = async ({ name, email, message }) => {
   </div>
   `
 
-  const formData = new URLSearchParams()
-  formData.append("from", `Website <mailgun@${MAILGUN_DOMAIN}>`)
-  formData.append("to", MY_EMAIL)
-  formData.append("reply-to", email)
-  formData.append("subject", `🔥 New message from ${name}`)
-  formData.append("html", html)
-  formData.append("text", message) // fallback for plain-text clients
-
-  const auth = Buffer.from(`api:${MAILGUN_KEY}`).toString("base64")
-
-  const response = await fetch(
-    `https://api.mailgun.net/v3/${MAILGUN_DOMAIN}/messages`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${auth}`
-      },
-      body: formData
-    }
-  )
-
-  if (!response.ok) {
-    throw new Error(await response.text())
-  }
-
-  return response.json()
+  return mg.messages.create(MAILGUN_DOMAIN, {
+    from: `Website <postmaster@${MAILGUN_DOMAIN}>`,
+    to: [MY_EMAIL],
+    replyTo: email,
+    subject: `🔥 New message from ${name}`,
+    html,
+    text: message, 
+  })
 }
