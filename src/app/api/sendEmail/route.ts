@@ -4,8 +4,8 @@ import { sendEmail } from "./emailService";
 export async function POST(req: NextRequest){
     try{
         const {name, email, message} = await req.json();
-
-        sendEmail({name, email, message})
+        
+        await sendEmail({name, email, message})
 
         return NextResponse.json({
             status: 200
