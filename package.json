@@ -76,7 +76,7 @@
     "typescript": "5.6.3"
   },
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "optionalDependencies": {
     "@tailwindcss/oxide-linux-x64-gnu": "latest",
