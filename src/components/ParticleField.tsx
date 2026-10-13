@@ -1,72 +1,68 @@
 'use client';
 
-import { useMemo, useRef, Suspense } from 'react';
+import { useEffect, useMemo, useRef, useState, Suspense } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { useScrollProgressRef, usePrefersReducedMotion } from '../lib/useScroll';
+import {
+  useSectionMorphRef,
+  usePrefersReducedMotion,
+} from '../lib/useScroll';
+import {
+  makeCloud,
+  makeImageShape,
+  makeBriefcase,
+  makeCodeBrackets,
+  makeNetwork,
+  makeEnvelope,
+  type TargetBuffer,
+} from '../lib/particleShapes';
+
+// Ordered to match the page sections. Index i corresponds to sectionIds[i].
+const SECTION_IDS = ['hero', 'experience', 'projects', 'skills', 'contact'];
 
 /* ----------------------------------------------------------------------------
- * Particle layer: a cloud of points distributed in a slab of 3D space.
- * Rotates and drifts slowly on its own, is pushed by scroll progress, and
- * leans gently toward the pointer for parallax. Colors are interpolated
- * between two brand tones so the field reads as "red accent on black".
+ * MorphingPoints
+ * A single persistent point cloud. Each frame it eases its live positions
+ * toward the target buffer selected by the current scroll "morph index", and
+ * blends toward that section's accent color. A gentle idle drift + pointer
+ * parallax keeps it alive between morphs.
  * ------------------------------------------------------------------------- */
-function ParticleLayer({
+function MorphingPoints({
   count,
-  radius,
-  size,
-  colorA,
-  colorB,
-  speed,
-  scrollRef,
+  targets,
+  colors,
+  morphRef,
   reducedMotion,
 }: {
   count: number;
-  radius: number;
-  size: number;
-  colorA: string;
-  colorB: string;
-  speed: number;
-  scrollRef: React.MutableRefObject<number>;
+  targets: TargetBuffer[];
+  colors: THREE.Color[];
+  morphRef: React.MutableRefObject<number>;
   reducedMotion: boolean;
 }) {
   const pointsRef = useRef<THREE.Points>(null);
+  const matRef = useRef<THREE.PointsMaterial>(null);
   const { viewport } = useThree();
 
-  // Build positions + per-point colors once.
-  const { positions, colors } = useMemo(() => {
-    const positions = new Float32Array(count * 3);
-    const colors = new Float32Array(count * 3);
-    const cA = new THREE.Color(colorA);
-    const cB = new THREE.Color(colorB);
-    const tmp = new THREE.Color();
+  // Live (animated) positions — start at the first target so there is no jump.
+  const live = useMemo(() => {
+    const base = targets[0] ?? makeCloud(count);
+    return Float32Array.from(base);
+  }, [targets, count]);
 
-    for (let i = 0; i < count; i++) {
-      const i3 = i * 3;
-      // Distribute in a flattened spherical shell for depth without a hard edge.
-      const r = radius * Math.cbrt(Math.random());
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
-      positions[i3] = r * Math.sin(phi) * Math.cos(theta);
-      positions[i3 + 1] = r * Math.sin(phi) * Math.sin(theta) * 0.6; // flatten vertically
-      positions[i3 + 2] = r * Math.cos(phi);
+  // Scratch target we lerp the live buffer toward each frame.
+  const blendTarget = useMemo(() => new Float32Array(count * 3), [count]);
 
-      tmp.copy(cA).lerp(cB, Math.random());
-      colors[i3] = tmp.r;
-      colors[i3 + 1] = tmp.g;
-      colors[i3 + 2] = tmp.b;
-    }
-    return { positions, colors };
-  }, [count, radius, colorA, colorB]);
+  const geomRef = useRef<THREE.BufferGeometry>(null);
 
-  // Soft circular sprite so points render as glowing dots, not squares.
+  // Soft circular sprite so points read as glowing dots.
   const sprite = useMemo(() => {
     const canvas = document.createElement('canvas');
     canvas.width = canvas.height = 64;
     const ctx = canvas.getContext('2d')!;
     const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
     g.addColorStop(0, 'rgba(255,255,255,1)');
-    g.addColorStop(0.25, 'rgba(255,255,255,0.85)');
+    g.addColorStop(0.3, 'rgba(255,255,255,0.8)');
     g.addColorStop(1, 'rgba(255,255,255,0)');
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 64, 64);
@@ -75,109 +71,164 @@ function ParticleLayer({
     return tex;
   }, []);
 
+  const tmpColorA = useMemo(() => new THREE.Color(), []);
+  const tmpColorB = useMemo(() => new THREE.Color(), []);
+
   useFrame((state, delta) => {
     const pts = pointsRef.current;
-    if (!pts) return;
+    const geom = geomRef.current;
+    if (!pts || !geom || targets.length === 0) return;
 
-    const scroll = scrollRef.current; // 0 → 1
+    // Current morph position, e.g. 1.37 → 37% between section 1 and 2.
+    const m = Math.max(0, Math.min(targets.length - 1, morphRef.current));
+    const i0 = Math.floor(m);
+    const i1 = Math.min(targets.length - 1, i0 + 1);
+    const f = m - i0;
+    // Smoothstep the blend fraction for a softer settle.
+    const fs = f * f * (3 - 2 * f);
+
+    const a = targets[i0];
+    const b = targets[i1];
+
+    // Build the blended target for this frame.
+    for (let k = 0; k < blendTarget.length; k++) {
+      blendTarget[k] = a[k] + (b[k] - a[k]) * fs;
+    }
+
+    // Ease live positions toward the blended target. Frame-rate independent.
+    const ease = 1 - Math.pow(reducedMotion ? 0.0001 : 0.0009, delta);
+    const posAttr = geom.getAttribute('position') as THREE.BufferAttribute;
+    const arr = posAttr.array as Float32Array;
+    for (let k = 0; k < arr.length; k++) {
+      arr[k] += (blendTarget[k] - arr[k]) * ease;
+    }
+    posAttr.needsUpdate = true;
+
+    // Blend material color between the two sections' accents.
+    if (matRef.current) {
+      tmpColorA.copy(colors[i0]);
+      tmpColorB.copy(colors[i1]);
+      tmpColorA.lerp(tmpColorB, fs);
+      matRef.current.color.copy(tmpColorA);
+    }
 
     if (reducedMotion) {
-      // Static but still responds to scroll position (no continuous animation).
-      pts.rotation.y = scroll * Math.PI * 0.5;
-      pts.position.z = scroll * 4;
+      pts.rotation.set(0, 0, 0);
+      pts.position.set(0, 0, 0);
       return;
     }
 
+    // Subtle idle life: tiny rotation + pointer parallax.
     const t = state.clock.getElapsedTime();
-    // Continuous slow spin + scroll-driven acceleration.
-    pts.rotation.y += delta * speed;
-    pts.rotation.x = Math.sin(t * 0.1) * 0.08 + scroll * 0.4;
-
-    // Pull the field toward the camera as the user scrolls (depth travel).
-    pts.position.z = scroll * 6;
-
-    // Gentle pointer parallax (pointer is normalized -1..1 by R3F).
-    const px = (state.pointer.x * viewport.width) / 40;
-    const py = (state.pointer.y * viewport.height) / 40;
-    pts.position.x += (px - pts.position.x) * 0.03;
-    pts.position.y += (py - pts.position.y) * 0.03;
+    pts.rotation.z = Math.sin(t * 0.15) * 0.03;
+    const px = (state.pointer.x * viewport.width) / 60;
+    const py = (state.pointer.y * viewport.height) / 60;
+    pts.position.x += (px - pts.position.x) * 0.04;
+    pts.position.y += (py - pts.position.y) * 0.04;
   });
 
   return (
     <points ref={pointsRef}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
-        <bufferAttribute attach="attributes-color" args={[colors, 3]} />
+      <bufferGeometry ref={geomRef}>
+        <bufferAttribute attach="attributes-position" args={[live, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        size={size}
+        ref={matRef}
+        size={0.075}
         map={sprite}
-        vertexColors
         transparent
         depthWrite={false}
         sizeAttenuation
         blending={THREE.AdditiveBlending}
         opacity={0.9}
+        color={colors[0]}
       />
     </points>
   );
 }
 
 function Scene({
-  scrollRef,
+  morphRef,
   reducedMotion,
   isMobile,
 }: {
-  scrollRef: React.MutableRefObject<number>;
+  morphRef: React.MutableRefObject<number>;
   reducedMotion: boolean;
   isMobile: boolean;
 }) {
-  // Scale particle density to the device to keep mobile smooth.
-  const near = isMobile ? 900 : 2600;
-  const far = isMobile ? 600 : 1600;
+  const count = isMobile ? 2600 : 6000;
+
+  // Per-section accent colors (hero → contact).
+  const colors = useMemo(
+    () =>
+      [
+        '#f87171', // hero  – soft red (pfp)
+        '#ef4444', // experience
+        '#fb7185', // projects
+        '#f472b6', // skills
+        '#ef4444', // contact
+      ].map((c) => new THREE.Color(c)),
+    []
+  );
+
+  // Procedural targets are available immediately.
+  const [targets, setTargets] = useState<TargetBuffer[]>(() => [
+    makeCloud(count), // hero placeholder until the image loads
+    makeBriefcase(count),
+    makeCodeBrackets(count),
+    makeNetwork(count),
+    makeEnvelope(count),
+  ]);
+
+  // Load the profile photo and swap it into the hero slot once sampled.
+  useEffect(() => {
+    let cancelled = false;
+    makeImageShape('/profilePicture.jpg', count, 9.5)
+      .then((pfp) => {
+        if (cancelled) return;
+        setTargets((prev) => {
+          const next = prev.slice();
+          next[0] = pfp;
+          return next;
+        });
+      })
+      .catch(() => {
+        /* keep the cloud placeholder on failure */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [count]);
 
   return (
-    <>
-      {/* Deep, cool starfield for depth */}
-      <ParticleLayer
-        count={far}
-        radius={18}
-        size={0.06}
-        colorA="#3f3f46"
-        colorB="#71717a"
-        speed={0.015}
-        scrollRef={scrollRef}
-        reducedMotion={reducedMotion}
-      />
-      {/* Nearer brand-colored accent field */}
-      <ParticleLayer
-        count={near}
-        radius={11}
-        size={0.09}
-        colorA="#ef4444"
-        colorB="#f87171"
-        speed={0.03}
-        scrollRef={scrollRef}
-        reducedMotion={reducedMotion}
-      />
-    </>
+    <MorphingPoints
+      count={count}
+      targets={targets}
+      colors={colors}
+      morphRef={morphRef}
+      reducedMotion={reducedMotion}
+    />
   );
 }
 
 /**
  * Full-viewport, fixed three.js particle background. Sits behind all content
- * (pointer-events: none) and reacts to scroll + pointer. Automatically throttles
- * on mobile and honors prefers-reduced-motion.
+ * and morphs its particle cloud into a shape for each section as the user
+ * scrolls: profile photo (hero) → briefcase (experience) → code brackets
+ * (projects) → network (skills) → envelope (contact).
  */
 export function ParticleField({ isMobile = false }: { isMobile?: boolean }) {
-  const scrollRef = useScrollProgressRef();
+  const morphRef = useSectionMorphRef(SECTION_IDS);
   const reducedMotion = usePrefersReducedMotion();
 
   return (
     <div
       aria-hidden="true"
       className="fixed inset-0 -z-10 pointer-events-none"
-      style={{ background: 'radial-gradient(circle at 50% 30%, #140708 0%, #000000 60%)' }}
+      style={{
+        background:
+          'radial-gradient(circle at 50% 35%, #140708 0%, #000000 65%)',
+      }}
     >
       <Canvas
         camera={{ position: [0, 0, 14], fov: 60 }}
@@ -186,7 +237,11 @@ export function ParticleField({ isMobile = false }: { isMobile?: boolean }) {
         frameloop={reducedMotion ? 'demand' : 'always'}
       >
         <Suspense fallback={null}>
-          <Scene scrollRef={scrollRef} reducedMotion={reducedMotion} isMobile={isMobile} />
+          <Scene
+            morphRef={morphRef}
+            reducedMotion={reducedMotion}
+            isMobile={isMobile}
+          />
         </Suspense>
       </Canvas>
     </div>
