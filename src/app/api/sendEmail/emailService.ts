@@ -2,12 +2,19 @@ import FormData from "form-data"
 import Mailgun from "mailgun.js"
 import { MAILGUN_KEY, MAILGUN_DOMAIN, MY_EMAIL } from "@/env"
 
-const mailgun = new Mailgun(FormData)
-
-const mg = mailgun.client({
-  username: "api",
-  key: MAILGUN_KEY,
-})
+// Lazily construct the Mailgun client so importing this module during
+// `next build` page-data collection does not require MAILGUN_KEY.
+let _mg: ReturnType<InstanceType<typeof Mailgun>["client"]> | null = null
+function getMg() {
+  if (!_mg) {
+    const mailgun = new Mailgun(FormData)
+    _mg = mailgun.client({
+      username: "api",
+      key: MAILGUN_KEY,
+    })
+  }
+  return _mg
+}
 
 export const sendEmail = async ({
   name,
@@ -81,7 +88,7 @@ export const sendEmail = async ({
   </div>
   `
 
-  return mg.messages.create(MAILGUN_DOMAIN, {
+  return getMg().messages.create(MAILGUN_DOMAIN, {
     from: `Website <postmaster@${MAILGUN_DOMAIN}>`,
     to: [MY_EMAIL],
     replyTo: email,

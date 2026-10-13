@@ -2,9 +2,18 @@ import { GoogleGenAI } from "@google/genai";
 import { GEMINI_API_KEY, GEMINI_MODELS, PINECONE_API_KEY, PINECONE_INDEX, PINECONE_NAMESPACE, SYSTEM_INSTRUCTIONS } from "@/env";
 import { Pinecone } from "@pinecone-database/pinecone";
 
-const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+// Lazily construct clients so that importing this module (e.g. during
+// `next build` page-data collection) does not require env vars to be present.
+let _ai: GoogleGenAI | null = null;
+function getAi(): GoogleGenAI {
+  if (!_ai) {
+    _ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+  }
+  return _ai;
+}
 
 export async function chatbotService(query: string): Promise<string> {
+  const ai = getAi();
   const context = await retrieveContext(query);
 
   const promptText = `
@@ -43,11 +52,16 @@ export async function chatbotService(query: string): Promise<string> {
 
   return "Sorry, I couldn't generate a response at this time."; 
 }
-const pinecone = new Pinecone({
-  apiKey: PINECONE_API_KEY,
-});
+let _pinecone: Pinecone | null = null;
+function getPinecone(): Pinecone {
+  if (!_pinecone) {
+    _pinecone = new Pinecone({ apiKey: PINECONE_API_KEY });
+  }
+  return _pinecone;
+}
 
 export async function retrieveContext(query: string): Promise<string> {
+  const pinecone = getPinecone();
   const index = pinecone.index(PINECONE_INDEX).namespace(PINECONE_NAMESPACE);
 
   const results = await index.searchRecords({

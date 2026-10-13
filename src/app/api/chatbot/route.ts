@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { chatbotService } from "./chatbotService";
 
+// This route depends on request body and external API clients; never
+// statically evaluate it during build.
+export const dynamic = "force-dynamic";
+
 // Utility to simulate streaming
 async function* simulateStream(fullText: string, chunkSize = 4, delayMs = 25) {
   let i = 0;
