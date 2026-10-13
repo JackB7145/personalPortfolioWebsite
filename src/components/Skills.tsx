@@ -18,19 +18,19 @@ export function Skills({skillsData}: {skillsData: any[]}) {
   ));
 
   return (
-    <section className="min-h-screen flex items-center justify-center py-20 px-4 relative bg-black">
-      <div className="max-w-6xl mx-auto relative z-10 w-full">
+    <section
+      id="skills"
+      className="section-shell flex min-h-screen items-center justify-center"
+    >
+      <div className="container-pro relative z-10 w-full">
         <motion.div
           {...anim.fadeInUp}
           viewport={{ once: true }}
-          className="text-center mb-12 md:mb-16"
+          className="mb-12 flex flex-col items-center gap-4 text-center md:mb-16"
         >
-          <h2 className="text-4xl md:text-5xl lg:text-7xl mb-4 relative inline-block">
-            <span className="relative text-white">
-              Skills
-              <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent" />
-            </span>
-          </h2>
+          <span className="eyebrow">Toolbox</span>
+          <h2 className="section-title">Skills</h2>
+          <div className="rule-accent max-w-xs" />
         </motion.div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
@@ -47,8 +47,8 @@ export function Skills({skillsData}: {skillsData: any[]}) {
               viewport={{ once: true, margin: "-50px" }}
               className="relative group"
             >
-              <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-4 md:p-6 h-full hover:border-red-500/30 transition-all duration-300">
-                <h3 className="text-xl md:text-2xl text-red-500 mb-4 md:mb-6">
+              <div className="glass-card h-full p-4 md:p-6">
+                <h3 className="mb-4 text-xl text-red-500 md:mb-6 md:text-2xl">
                   {skillCard.getTitle()}
                 </h3>
                 

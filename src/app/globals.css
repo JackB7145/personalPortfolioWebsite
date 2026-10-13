@@ -131,6 +131,50 @@
     font-size: var(--font-size);
   }
 
+  /* Prevent horizontal overflow / x-axis scrollbar (notably on mobile) */
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+}
+
+/* ───────────────────────────────
+   Scrollbar Styling (dark theme)
+   Keeps the scrollbar from rendering as a white strip
+   against the site's black background.
+─────────────────────────────── */
+html {
+  scrollbar-color: #3f3f46 #0a0a0a; /* thumb, track — Firefox */
+  scrollbar-width: thin;
+}
+
+/* WebKit / Chromium / Safari */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a; /* near-black, matches bg-black */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #3f3f46; /* zinc-700 */
+  border-radius: 9999px;
+  border: 2px solid #0a0a0a; /* padding so thumb reads as rounded */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #52525b; /* zinc-600 */
+}
+
+::-webkit-scrollbar-corner {
+  background: #0a0a0a;
+}
+
+@layer base {
+
   :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) {
     h1 { font-size: var(--text-2xl); font-weight: var(--font-weight-medium); line-height: 1.5; }
     h2 { font-size: var(--text-xl); font-weight: var(--font-weight-medium); line-height: 1.5; }
@@ -141,4 +185,181 @@
       line-height: 1.5;
     }
   }
+}
+
+
+/* ───────────────────────────────
+   Professional Design System
+   Brand tokens, glass surfaces, section rhythm, reusable utilities.
+─────────────────────────────── */
+:root {
+  /* Brand accent ramp */
+  --accent: #ef4444;          /* red-500 */
+  --accent-strong: #dc2626;   /* red-600 */
+  --accent-soft: #f87171;     /* red-400 */
+  --accent-glow: rgba(239, 68, 68, 0.35);
+
+  /* Neutral surface ramp (dark theme) */
+  --ink: #09090b;             /* page base */
+  --surface-1: rgba(24, 24, 27, 0.55);   /* card */
+  --surface-2: rgba(39, 39, 42, 0.55);   /* raised */
+  --hairline: rgba(255, 255, 255, 0.08);
+  --hairline-strong: rgba(255, 255, 255, 0.14);
+
+  /* Text ramp */
+  --text-hi: #fafafa;
+  --text-mid: #a1a1aa;        /* zinc-400 */
+  --text-lo: #71717a;         /* zinc-500 */
+
+  /* Layout rhythm */
+  --section-y: clamp(5rem, 10vw, 9rem);
+  --container: 72rem;         /* 1152px */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Shared section wrapper: vertical rhythm + horizontal gutters */
+.section-shell {
+  position: relative;
+  width: 100%;
+  padding-top: var(--section-y);
+  padding-bottom: var(--section-y);
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.container-pro {
+  width: 100%;
+  max-width: var(--container);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Eyebrow label above section titles */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent-soft);
+  font-weight: 600;
+}
+.eyebrow::before {
+  content: '';
+  width: 1.75rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent));
+}
+
+/* Section heading */
+.section-title {
+  color: var(--text-hi);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  font-size: clamp(2.25rem, 5vw, 3.75rem);
+}
+
+/* Glass card surface used across sections */
+.glass-card {
+  position: relative;
+  background: var(--surface-1);
+  border: 1px solid var(--hairline);
+  border-radius: 1rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: border-color 0.3s var(--ease-out),
+    transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+}
+.glass-card:hover {
+  border-color: rgba(239, 68, 68, 0.4);
+  box-shadow: 0 18px 40px -24px var(--accent-glow);
+}
+
+/* Subtle gradient divider */
+.rule-accent {
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+
+/* Button system */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.4rem;
+  border-radius: 0.65rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.25s var(--ease-out);
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 10px 30px -12px var(--accent-glow);
+}
+.btn-primary:hover {
+  background: var(--accent-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px -12px var(--accent-glow);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--text-hi);
+  border-color: var(--hairline-strong);
+}
+.btn-ghost:hover {
+  border-color: var(--accent);
+  color: var(--accent-soft);
+  transform: translateY(-2px);
+}
+
+/* Chip / badge */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.7rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  color: var(--text-mid);
+  background: rgba(39, 39, 42, 0.5);
+  border: 1px solid var(--hairline);
+  transition: all 0.25s var(--ease-out);
+}
+.chip:hover {
+  color: var(--text-hi);
+  border-color: var(--hairline-strong);
+}
+
+/* Accessible focus ring for interactive elements */
+a:focus-visible,
+button:focus-visible,
+.btn:focus-visible {
+  outline: 2px solid var(--accent-soft);
+  outline-offset: 2px;
+  border-radius: 0.4rem;
+}
+
+/* Honor reduced-motion globally for CSS transitions/animations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Smooth anchor scrolling for the nav */
+html {
+  scroll-behavior: smooth;
 }

@@ -66,20 +66,20 @@ export function Contact() {
   };
 
   return (
-    <section className="min-h-screen flex items-center justify-center py-20 px-4 relative bg-black">
-      <div className="max-w-6xl mx-auto relative z-10 w-full">
+    <section
+      id="contact"
+      className="section-shell flex min-h-screen items-center justify-center"
+    >
+      <div className="container-pro relative z-10 w-full">
         <motion.div
           {...anim.fadeInUp}
           viewport={{ once: true }}
-          className="text-center mb-12 md:mb-16"
+          className="mb-12 flex flex-col items-center gap-4 text-center md:mb-16"
         >
-          <h2 className="text-4xl md:text-5xl lg:text-7xl mb-4 relative inline-block">
-            <span className="relative text-white">
-              Get in Touch
-              <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent" />
-            </span>
-          </h2>
-          <p className="text-gray-400 mt-6 max-w-2xl mx-auto text-sm md:text-base px-4">
+          <span className="eyebrow">Contact</span>
+          <h2 className="section-title">Get in Touch</h2>
+          <div className="rule-accent max-w-xs" />
+          <p className="mt-2 max-w-2xl text-sm text-zinc-400 md:text-base">
             Interested in collaborating or just want to chat? Book a coffee chat or send me a
             message.
           </p>
@@ -97,7 +97,7 @@ export function Contact() {
             }}
             viewport={{ once: true, margin: '-50px' }}
           >
-          <Card className="bg-gray-900/50 border-gray-800 h-full">
+          <Card className="glass-card h-full border-0 bg-transparent">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-red-500 text-lg md:text-xl">
                 <Coffee className="w-4 h-4 md:w-5 md:h-5" />
@@ -152,7 +152,7 @@ export function Contact() {
             }}
             viewport={{ once: true, margin: '-50px' }}
           >
-            <Card className="bg-gray-900/50 border-gray-800 h-full">
+            <Card className="glass-card h-full border-0 bg-transparent">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-red-500 text-lg md:text-xl">
                   <Mail className="w-4 h-4 md:w-5 md:h-5" />

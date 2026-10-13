@@ -23,19 +23,19 @@ export function Experience({experiencesData}: {experiencesData: any[]}) {
   ));
 
   return (
-    <section className="min-h-screen flex items-center justify-center py-20 px-4 relative bg-black">
-      <div className="max-w-4xl mx-auto relative z-10 w-full">
+    <section
+      id="experience"
+      className="section-shell flex min-h-screen items-center justify-center"
+    >
+      <div className="container-pro relative z-10 w-full max-w-4xl">
         <motion.div
           {...anim.fadeInUp}
           viewport={{ once: true }}
-          className="text-center mb-12 md:mb-16"
+          className="mb-12 flex flex-col items-center gap-4 text-center md:mb-16"
         >
-          <h2 className="text-4xl md:text-5xl lg:text-7xl mb-4 relative inline-block">
-            <span className="relative text-white">
-              Experience
-              <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent" />
-            </span>
-          </h2>
+          <span className="eyebrow">Career</span>
+          <h2 className="section-title">Experience</h2>
+          <div className="rule-accent max-w-xs" />
         </motion.div>
 
         {/* Timeline - Centered */}
@@ -77,7 +77,7 @@ export function Experience({experiencesData}: {experiencesData: any[]}) {
               {/* Card - full width centered */}
               <div className="w-full">
                 <motion.div
-                  className="bg-gray-900/50 border border-gray-800 rounded-lg p-4 md:p-6 hover:border-red-500/30 transition-all duration-300 mx-auto"
+                  className="glass-card mx-auto p-4 md:p-6"
                   {...(!isMobile && anim.scaleSubtle)}
                 >
                   <div className="flex items-start gap-3 mb-3">

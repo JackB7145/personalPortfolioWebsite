@@ -3,12 +3,12 @@ import type { Transition } from "framer-motion";
 
 const baseTransition: Transition = {
   duration: 0.8,
-  ease: "easeInOut", 
+  ease: "easeInOut" as const, 
 };
 
 const mobileTransition: Transition = {
   duration: 0.3,
-  ease: "easeInOut",
+  ease: "easeInOut" as const,
 };
 
 export const getAnimationConfig = (isMobile: boolean) => {
@@ -43,21 +43,21 @@ export const getAnimationConfig = (isMobile: boolean) => {
     scale: {
       whileHover: {
         scale: 1.05,
-        transition: { duration: 0.3, ease: "easeInOut" },
+        transition: { duration: 0.3, ease: "easeInOut" as const },
       },
       whileTap: { scale: 0.98 },
     },
     scaleSubtle: {
       whileHover: {
         scale: 1.02,
-        transition: { duration: 0.3, ease: "easeInOut" },
+        transition: { duration: 0.3, ease: "easeInOut" as const },
       },
       whileTap: { scale: 0.99 },
     },
     slideUp: {
       whileHover: {
         y: -8,
-        transition: { duration: 0.3, ease: "easeInOut" },
+        transition: { duration: 0.3, ease: "easeInOut" as const },
       },
     },
     glow: {
@@ -71,7 +71,7 @@ export const getAnimationConfig = (isMobile: boolean) => {
       transition: {
         duration: 3,
         repeat: Infinity,
-        ease: "easeInOut",
+        ease: "easeInOut" as const,
       },
     },
     none: {

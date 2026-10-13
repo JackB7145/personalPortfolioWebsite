@@ -38,20 +38,20 @@ export function Projects({projectsData}: {projectsData: any[]}) {
   };
 
   return (
-    <section className="min-h-screen flex items-center justify-center py-20 px-4 relative bg-black">
-      <div className="max-w-6xl mx-auto relative z-10 w-full">
+    <section
+      id="projects"
+      className="section-shell flex min-h-screen items-center justify-center"
+    >
+      <div className="container-pro relative z-10 w-full">
         <motion.div
           {...anim.fadeInUp}
           viewport={{ once: true }}
-          className="text-center mb-12 md:mb-16"
+          className="mb-12 flex flex-col items-center gap-4 text-center md:mb-16"
         >
-          <h2 className="text-4xl md:text-5xl lg:text-7xl mb-4 relative inline-block">
-            <span className="relative text-white">
-              Projects
-              <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent" />
-            </span>
-          </h2>
-          <p className="text-gray-400 mt-6 text-sm md:text-base">
+          <span className="eyebrow">Work</span>
+          <h2 className="section-title">Projects</h2>
+          <div className="rule-accent max-w-xs" />
+          <p className="mt-2 text-sm text-zinc-400 md:text-base">
             Showcase repositories automatically synced from GitHub
           </p>
         </motion.div>
@@ -72,7 +72,7 @@ export function Projects({projectsData}: {projectsData: any[]}) {
               className="group cursor-pointer"
               onClick={() => openProject(projectCard)}
             >
-              <Card className="bg-gray-900/50 border-gray-800 hover:border-red-500/50 transition-all duration-300 h-full">
+              <Card className="glass-card h-full border-0 bg-transparent">
                 <CardHeader>
                   <div className="flex items-start justify-between mb-2">
                     <motion.div

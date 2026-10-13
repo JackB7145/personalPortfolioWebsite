@@ -1,27 +1,38 @@
 'use client';
 
 import { useContext, useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { DataContext } from './contexts/DataContext';
 import { ScrollReveal } from '../components/ScrollReveal';
+import { NavBar } from '../components/NavBar';
 import { Hero } from '../components/Hero';
 import { Projects } from '../components/Projects';
 import { Experience } from '../components/Experience';
 import { Skills } from '../components/Skills';
 import { Chatbot } from '../components/Chatbot';
 import { Contact } from '../components/Contact';
+import { useIsMobile } from '../components/ui/use-mobile';
+
+// three.js background is client-only; load it without SSR to avoid
+// touching window/WebGL during server render.
+const ParticleField = dynamic(
+  () => import('../components/ParticleField').then((m) => m.ParticleField),
+  { ssr: false }
+);
 
 export default function Home() {
   const { portfolioData } = useContext(DataContext);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const [introProgress, setIntroProgress] = useState(0);
+  const isMobile = useIsMobile();
 
+  // Drives the opening curtain reveal only (first ~400px of scroll).
   useEffect(() => {
     const handleScroll = () => {
       const scrollThreshold = 400;
       const progress = Math.min(window.scrollY / scrollThreshold, 1);
-      setScrollProgress(progress);
+      setIntroProgress(progress);
     };
-
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -42,11 +53,19 @@ export default function Home() {
   }
 
   const { personalInfo, projects, experiences, skills } = portfolioData;
-  return (
-    <main className="bg-black min-h-screen">
-      <ScrollReveal progress={scrollProgress} />
 
-      <div style={{ opacity: scrollProgress }}>
+  return (
+    <main className="relative min-h-screen bg-black">
+      {/* three.js particle background (fixed, behind everything) */}
+      <ParticleField isMobile={isMobile} />
+
+      {/* Opening curtain intro */}
+      <ScrollReveal progress={introProgress} />
+
+      {/* Persistent navigation */}
+      <NavBar />
+
+      <div style={{ opacity: introProgress }}>
         <Hero personalInfo={personalInfo} />
         <Experience experiencesData={experiences} />
         <Projects projectsData={projects} />
