@@ -55,7 +55,7 @@ export default function Home() {
   const { personalInfo, projects, experiences, skills } = portfolioData;
 
   return (
-    <main className="relative min-h-screen bg-black">
+    <main className="relative min-h-screen">
       {/* three.js particle background (fixed, behind everything) */}
       <ParticleField isMobile={isMobile} />
 

@@ -124,11 +124,16 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background: transparent;
   }
 
   html {
     font-size: var(--font-size);
+    /* Solid near-black backdrop lives on <html> so the fixed particle
+       canvas (rendered inside <body> at z-index -10) composites on top of
+       it instead of being hidden behind an opaque <body> background. */
+    background: #000000;
   }
 
   /* Prevent horizontal overflow / x-axis scrollbar (notably on mobile) */
