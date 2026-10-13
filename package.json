@@ -81,8 +81,5 @@
   "optionalDependencies": {
     "@tailwindcss/oxide-linux-x64-gnu": "latest",
     "lightningcss-linux-x64-gnu": "latest"
-  },
-  "vercel-build": {
-    "cmd": "npm install --legacy-peer-deps && npm run build"
   }
 }
