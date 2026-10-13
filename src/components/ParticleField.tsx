@@ -33,12 +33,14 @@ function MorphingPoints({
   colors,
   morphRef,
   reducedMotion,
+  isMobile,
 }: {
   count: number;
   targets: TargetBuffer[];
   colors: THREE.Color[];
   morphRef: React.MutableRefObject<number>;
   reducedMotion: boolean;
+  isMobile: boolean;
 }) {
   const pointsRef = useRef<THREE.Points>(null);
   const matRef = useRef<THREE.PointsMaterial>(null);
@@ -112,19 +114,37 @@ function MorphingPoints({
       matRef.current.color.copy(tmpColorA);
     }
 
+    // --- Keep shapes OUT of the reading column -----------------------------
+    // Push the formed shape into a side margin and shrink it so it reads as
+    // an ambient accent next to the glass content rather than behind it.
+    // Alternate sides per section for visual rhythm. On mobile there is no
+    // gutter, so pull it toward the bottom and shrink further.
+    const sideFor = (idx: number) => (idx % 2 === 0 ? 1 : -1); // +right / -left
+    const baseShift = isMobile ? 0 : viewport.width * 0.26;
+    const shiftA = sideFor(i0) * baseShift;
+    const shiftB = sideFor(i1) * baseShift;
+    const targetX = shiftA + (shiftB - shiftA) * fs;
+    const targetY = isMobile ? -viewport.height * 0.22 : 0;
+    const groupScale = isMobile ? 0.6 : 0.78;
+
     if (reducedMotion) {
       pts.rotation.set(0, 0, 0);
-      pts.position.set(0, 0, 0);
+      pts.position.set(targetX, targetY, 0);
+      pts.scale.setScalar(groupScale);
       return;
     }
 
-    // Subtle idle life: tiny rotation + pointer parallax.
+    // Ease the group toward its side position so section changes glide.
+    pts.scale.setScalar(groupScale);
+    const settle = 1 - Math.pow(0.02, delta);
+
+    // Subtle idle life: tiny rotation + pointer parallax layered on the side offset.
     const t = state.clock.getElapsedTime();
     pts.rotation.z = Math.sin(t * 0.15) * 0.03;
-    const px = (state.pointer.x * viewport.width) / 60;
-    const py = (state.pointer.y * viewport.height) / 60;
-    pts.position.x += (px - pts.position.x) * 0.04;
-    pts.position.y += (py - pts.position.y) * 0.04;
+    const px = (state.pointer.x * viewport.width) / 90;
+    const py = (state.pointer.y * viewport.height) / 90;
+    pts.position.x += (targetX + px - pts.position.x) * settle;
+    pts.position.y += (targetY + py - pts.position.y) * settle;
   });
 
   return (
@@ -134,13 +154,13 @@ function MorphingPoints({
       </bufferGeometry>
       <pointsMaterial
         ref={matRef}
-        size={0.075}
+        size={0.055}
         map={sprite}
         transparent
         depthWrite={false}
         sizeAttenuation
         blending={THREE.AdditiveBlending}
-        opacity={0.9}
+        opacity={0.42}
         color={colors[0]}
       />
     </points>
@@ -156,7 +176,7 @@ function Scene({
   reducedMotion: boolean;
   isMobile: boolean;
 }) {
-  const count = isMobile ? 2600 : 6000;
+  const count = isMobile ? 2200 : 3800;
 
   // Per-section accent colors (hero → contact).
   const colors = useMemo(
@@ -207,6 +227,7 @@ function Scene({
       colors={colors}
       morphRef={morphRef}
       reducedMotion={reducedMotion}
+      isMobile={isMobile}
     />
   );
 }
