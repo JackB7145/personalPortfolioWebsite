@@ -25,10 +25,10 @@ export default function Home() {
   const [introProgress, setIntroProgress] = useState(0);
   const isMobile = useIsMobile();
 
-  // Drives the opening curtain reveal only (first ~400px of scroll).
+  // Drives the opening curtain reveal only (first ~250px of scroll).
   useEffect(() => {
     const handleScroll = () => {
-      const scrollThreshold = 400;
+      const scrollThreshold = 250;
       const progress = Math.min(window.scrollY / scrollThreshold, 1);
       setIntroProgress(progress);
     };

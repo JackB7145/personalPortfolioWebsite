@@ -19,7 +19,7 @@ export function ScrollReveal({ progress }: ScrollRevealProps) {
     >
       {/* Left curtain */}
       <motion.div
-        className="absolute top-0 left-0 h-full w-1/2 bg-black"
+        className="absolute top-0 left-0 h-full w-1/2 bg-black/60 backdrop-blur-[2px]"
         style={{
           x: `-${progress * 50}%`,
         }}
@@ -42,7 +42,7 @@ export function ScrollReveal({ progress }: ScrollRevealProps) {
 
       {/* Right curtain */}
       <motion.div
-        className="absolute top-0 right-0 h-full w-1/2 bg-black"
+        className="absolute top-0 right-0 h-full w-1/2 bg-black/60 backdrop-blur-[2px]"
         style={{
           x: `${progress * 50}%`,
         }}
