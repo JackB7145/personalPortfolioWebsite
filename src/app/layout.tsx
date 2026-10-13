@@ -1,33 +1,7 @@
 'use client';
-import { Orbitron } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '../components/ui/sonner';
-import { DataProvider } from './contexts/DataContext'; 
-
-import { Poppins } from 'next/font/google';
-import { Rubik } from 'next/font/google';
-import { Space_Grotesk } from 'next/font/google';
-
-const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-poppins',
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  weight: ['400', '500', '700'],
-  variable: '--font-space-grotesk',
-});
-
-const rubik = Rubik({
-  subsets: ['latin'],
-  weight: ['400', '500', '700'],
-  variable: '--font-rubik',
-});
-
-
-
+import { DataProvider } from './contexts/DataContext';
 
 export default function RootLayout({
   children,
@@ -36,7 +10,26 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={poppins.className}>
+      <head>
+        {/*
+          Load Poppins via a standard stylesheet link instead of
+          next/font/google. The next/font loader fetches/parses fonts at
+          build time and crashes under Vercel's Node 24
+          ("next/font: Cannot read properties of null (reading '1')"),
+          so we avoid that code path entirely.
+        */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body style={{ fontFamily: "'Poppins', system-ui, -apple-system, sans-serif" }}>
         <DataProvider>
           {children}
           <Toaster position="bottom-right" />
