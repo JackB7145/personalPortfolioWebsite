@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
+import { withRequestLogging } from '@/src/lib/requestLog';
 
-export async function GET() {
+export const GET = withRequestLogging('skills', async () => {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -39,4 +40,4 @@ const skills = [
 
 
   return NextResponse.json(skills);
-}
+});

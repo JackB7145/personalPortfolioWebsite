@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-export async function GET() {
+import { withRequestLogging } from '@/src/lib/requestLog';
+export const GET = withRequestLogging('personal-info', async () => {
   const personalInfo = {
     name: 'Jack Branston',
     title: 'Software Engineer',
@@ -16,4 +17,4 @@ export async function GET() {
   };
 
   return NextResponse.json(personalInfo);
-}
+});

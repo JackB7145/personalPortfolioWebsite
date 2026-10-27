@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
+import { withRequestLogging } from '@/src/lib/requestLog';
 
-export async function GET() {
+export const GET = withRequestLogging('experiences', async () => {
   // Simulate LinkedIn API delay
   await new Promise(resolve => setTimeout(resolve, 150));
 
@@ -69,4 +70,4 @@ export async function GET() {
 
 
   return NextResponse.json(experiences);
-}
+});

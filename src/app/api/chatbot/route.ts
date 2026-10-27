@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { chatbotService } from "./chatbotService";
+import { logRouteError, withRequestLogging } from '@/src/lib/requestLog';
 
 // This route depends on request body and external API clients; never
 // statically evaluate it during build.
@@ -15,7 +16,7 @@ async function* simulateStream(fullText: string, chunkSize = 4, delayMs = 25) {
   }
 }
 
-export async function POST(req: NextRequest) {
+export const POST = withRequestLogging('chatbot', async (req: NextRequest) => {
   const { query } = await req.json();
 
   try {
@@ -44,6 +45,7 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (err) {
+    logRouteError("chatbot", err);
     return NextResponse.json({ response: "Error generating response." }, { status: 500 });
   }
-}
+});

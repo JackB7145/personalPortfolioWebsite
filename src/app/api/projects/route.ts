@@ -2,8 +2,9 @@ import { NextResponse } from 'next/server';
 import { projects as dummyProjects } from './dummy';
 import { getStarredProjects } from './projectsService';
 import { ENVIRONEMENT } from '@/env'
+import { logRouteError, withRequestLogging } from '@/src/lib/requestLog';
 
-export async function GET() {
+export const GET = withRequestLogging('projects', async () => {
   try {
     if (ENVIRONEMENT === 'test') {
       console.log('→ Using dummy data (NODE_ENV = test)');
@@ -14,10 +15,10 @@ export async function GET() {
     return NextResponse.json(projects);
 
   } catch (err) {
-    console.error('Error fetching projects:', err);
+    logRouteError('projects', err);
     return NextResponse.json(
       { error: 'Failed to fetch projects' },
       { status: 500 }
     );
   }
-}
+});
