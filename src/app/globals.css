@@ -133,7 +133,8 @@
     /* Solid near-black backdrop lives on <html> so the fixed particle
        canvas (rendered inside <body> at z-index -10) composites on top of
        it instead of being hidden behind an opaque <body> background. */
-    background: #000000;
+    background: var(--page-bg);
+    transition: background-color 0.6s var(--ease-out);
   }
 
   /* Prevent horizontal overflow / x-axis scrollbar (notably on mobile) */
@@ -150,7 +151,11 @@
    against the site's black background.
 ─────────────────────────────── */
 html {
-  scrollbar-color: #3f3f46 #0a0a0a; /* thumb, track — Firefox */
+  --page-bg: #000000;
+  --scroll-track: #0a0a0a;
+  --scroll-thumb: #3f3f46;
+  --scroll-thumb-hover: #52525b;
+  scrollbar-color: var(--scroll-thumb) var(--scroll-track); /* thumb, track — Firefox */
   scrollbar-width: thin;
 }
 
@@ -161,21 +166,21 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0a0a0a; /* near-black, matches bg-black */
+  background: var(--scroll-track); /* matches page background */
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #3f3f46; /* zinc-700 */
+  background-color: var(--scroll-thumb);
   border-radius: 9999px;
-  border: 2px solid #0a0a0a; /* padding so thumb reads as rounded */
+  border: 2px solid var(--scroll-track); /* padding so thumb reads as rounded */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #52525b; /* zinc-600 */
+  background-color: var(--scroll-thumb-hover);
 }
 
 ::-webkit-scrollbar-corner {
-  background: #0a0a0a;
+  background: var(--scroll-track);
 }
 
 @layer base {
@@ -210,6 +215,9 @@ html {
   --surface-2: rgba(39, 39, 42, 0.55);   /* raised */
   --hairline: rgba(255, 255, 255, 0.08);
   --hairline-strong: rgba(255, 255, 255, 0.14);
+
+  /* Navbar glass (scrolled state) */
+  --nav-bg: rgba(9, 9, 11, 0.72);
 
   /* Text ramp */
   --text-hi: #fafafa;
@@ -334,7 +342,7 @@ html {
   border-radius: 9999px;
   font-size: 0.75rem;
   color: var(--text-mid);
-  background: rgba(39, 39, 42, 0.5);
+  background: var(--surface-2);
   border: 1px solid var(--hairline);
   transition: all 0.25s var(--ease-out);
 }
@@ -367,4 +375,298 @@ button:focus-visible,
 /* Smooth anchor scrolling for the nav */
 html {
   scroll-behavior: smooth;
+}
+
+/* ───────────────────────────────
+   Day (light) mode — 5 AM to 5 PM local time
+   The site is authored dark-first with Tailwind neutral utilities
+   (text-white, bg-gray-800, text-zinc-400, …). Rather than rewrite every
+   component, invert the neutral ramps under html.light so those utilities
+   flip automatically. Use literal colors (e.g. text-[#fff]) for anything
+   that must stay fixed, like white text on red buttons.
+─────────────────────────────── */
+html.light {
+  --color-white: #09090b;
+  --color-black: #ffffff;
+
+  --color-zinc-50: oklch(14.1% 0.005 285.823);
+  --color-zinc-100: oklch(21% 0.006 285.885);
+  --color-zinc-200: oklch(27.4% 0.006 286.033);
+  --color-zinc-300: oklch(37% 0.013 285.805);
+  --color-zinc-400: oklch(44.2% 0.017 285.786);
+  --color-zinc-500: oklch(55.2% 0.016 285.938);
+  --color-zinc-600: oklch(70.5% 0.015 286.067);
+  --color-zinc-700: oklch(87.1% 0.006 286.286);
+  --color-zinc-800: oklch(92% 0.004 286.32);
+  --color-zinc-900: oklch(96.7% 0.001 286.375);
+  --color-zinc-950: oklch(98.5% 0 0);
+
+  --color-gray-50: oklch(13% 0.028 261.692);
+  --color-gray-100: oklch(21% 0.034 264.665);
+  --color-gray-200: oklch(27.8% 0.033 256.848);
+  --color-gray-300: oklch(37.3% 0.034 259.733);
+  --color-gray-400: oklch(44.6% 0.03 256.802);
+  --color-gray-500: oklch(55.1% 0.027 264.364);
+  --color-gray-600: oklch(70.7% 0.022 261.325);
+  --color-gray-700: oklch(87.2% 0.01 258.338);
+  --color-gray-800: oklch(92.8% 0.006 264.531);
+  --color-gray-900: oklch(96.7% 0.003 264.542);
+  --color-gray-950: oklch(98.5% 0.002 247.839);
+
+  /* Design-system tokens */
+  --accent-soft: #dc2626;
+  --accent-glow: rgba(239, 68, 68, 0.25);
+  --ink: #fafafa;
+  --surface-1: rgba(255, 255, 255, 0.6);
+  --surface-2: rgba(244, 244, 245, 0.7);
+  --hairline: rgba(9, 9, 11, 0.08);
+  --hairline-strong: rgba(9, 9, 11, 0.16);
+  --text-hi: #09090b;
+  --text-mid: #52525b;
+  --text-lo: #71717a;
+  --nav-bg: rgba(255, 255, 255, 0.75);
+
+  --page-bg: #fafafa;
+  --scroll-track: #f4f4f5;
+  --scroll-thumb: #d4d4d8;
+  --scroll-thumb-hover: #a1a1aa;
+}
+
+/* ───────────────────────────────
+   Digital clock (navbar, top right)
+─────────────────────────────── */
+.digital-clock {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--hairline-strong);
+  background: var(--surface-1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-family: 'VT323', ui-monospace, monospace;
+  font-size: 1.35rem;
+  line-height: 1;
+  color: var(--accent-soft);
+  text-shadow: 0 0 8px var(--accent-glow);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.digital-clock-ampm {
+  font-size: 0.95rem;
+  color: var(--text-mid);
+  text-shadow: none;
+}
+
+/* ───────────────────────────────
+   Seasonal / holiday decoration layer
+   .season-sprite carries the travel (per data-motion); .season-sway the
+   wobble, bob or twinkle. Per-sprite values come from inline vars.
+   .season-scenery items are fixed ornaments pinned to screen edges.
+─────────────────────────────── */
+.season-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.season-sprite {
+  position: absolute;
+  top: 0;
+  opacity: 0.6;
+  transform: translate3d(0, var(--y), 0);
+  animation-name: season-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+.season-sway {
+  animation: season-sway ease-in-out infinite alternate;
+}
+
+.season-sprite[data-motion='rise'] { animation-name: season-rise; }
+.season-sprite[data-motion='rise'] .season-sway { animation-name: season-twinkle; }
+
+.season-sprite[data-motion='rain'] { animation-name: season-rain; opacity: 0.5; }
+.season-sprite[data-motion='rain'] .season-sway { animation: none; }
+
+/* Drifters enter from a screen edge, so ignore the random inline `left`. */
+.season-sprite[data-motion='drift'] { left: 0 !important; animation-name: season-drift; }
+.season-sprite[data-motion='drift'] .season-sway { animation-name: season-bob; }
+.season-sprite[data-motion='drift'][data-dir='rtl'] { animation-direction: reverse; }
+.season-sprite[data-dir='rtl'] svg { transform: scaleX(-1); }
+
+.season-scenery {
+  position: absolute;
+  opacity: 0.55;
+  line-height: 0;
+}
+
+html.light .season-sprite,
+html.light .season-scenery {
+  opacity: 0.8;
+  /* Outline pale icons (snow, ghosts, petals) so they read on a light page. */
+  filter: drop-shadow(0 0 1px rgba(30, 41, 59, 0.55));
+}
+
+@keyframes season-fall {
+  from { transform: translate3d(0, -10vh, 0) rotate(0deg); }
+  to { transform: translate3d(var(--drift), 110vh, 0) rotate(var(--spin)); }
+}
+@keyframes season-rain {
+  from { transform: translate3d(0, -10vh, 0); }
+  to { transform: translate3d(-40px, 110vh, 0); }
+}
+@keyframes season-rise {
+  from { transform: translate3d(0, 110vh, 0); }
+  to { transform: translate3d(var(--drift), -10vh, 0); }
+}
+@keyframes season-drift {
+  from { transform: translate3d(-10vw, var(--y), 0); }
+  to { transform: translate3d(110vw, calc(var(--y) + var(--drift)), 0); }
+}
+@keyframes season-sway {
+  from { transform: translateX(-14px) rotate(-12deg); }
+  to { transform: translateX(14px) rotate(12deg); }
+}
+@keyframes season-bob {
+  from { transform: translateY(-10px) rotate(-4deg); }
+  to { transform: translateY(10px) rotate(4deg); }
+}
+@keyframes season-twinkle {
+  from { opacity: 0.25; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1.1); }
+}
+
+/* Reduced motion: hold sprites still at their scattered positions. */
+@media (prefers-reduced-motion: reduce) {
+  .season-sprite,
+  .season-sway {
+    animation: none !important;
+  }
+}
+
+/* Santa's sleigh flyover (Christmas) */
+.santa-flyover {
+  position: absolute;
+  top: 16vh;
+  left: 0;
+  animation: santa-fly 24s linear infinite;
+  animation-delay: -6s;
+  will-change: transform;
+}
+.santa-team {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.35rem;
+  animation: season-bob 1.6s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 6px rgba(253, 224, 71, 0.45));
+}
+.santa-trail {
+  opacity: 0.8;
+  animation: season-twinkle 0.8s ease-in-out infinite alternate;
+}
+@keyframes santa-fly {
+  0% { transform: translate3d(-30vw, 6vh, 0); }
+  50% { transform: translate3d(45vw, -2vh, 0); }
+  100% { transform: translate3d(120vw, 6vh, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .santa-flyover,
+  .santa-team,
+  .santa-trail {
+    animation: none !important;
+  }
+  .santa-flyover { transform: translate3d(65vw, 0, 0); }
+}
+
+/* Holiday countdown pill under the navbar clock */
+.event-pill {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  border: 1px solid var(--hairline-strong);
+  background: var(--nav-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--text-hi);
+  font-size: 0.72rem;
+  font-weight: 500;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+/* ───────────────────────────────
+   Dev-only season/theme picker (NEXT_PUBLIC_SEASON_PICKER=true)
+─────────────────────────────── */
+.season-picker {
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--hairline-strong);
+  background: var(--nav-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--text-hi);
+  font-size: 0.8rem;
+  box-shadow: 0 12px 30px -18px rgba(0, 0, 0, 0.5);
+}
+.season-picker-toggle {
+  align-self: flex-start;
+  font-size: 0.75rem;
+  color: var(--text-mid);
+}
+.season-picker-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+}
+.season-picker-group legend {
+  width: 100%;
+  margin-bottom: 0.2rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-soft);
+}
+.season-picker-group label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+  text-transform: capitalize;
+}
+.season-picker-group input {
+  accent-color: var(--accent);
+}
+.season-picker-group select,
+.season-picker-group input[type='datetime-local'] {
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.4rem;
+  border: 1px solid var(--hairline-strong);
+  background: var(--surface-2);
+  color: var(--text-hi);
+  color-scheme: dark;
+}
+html.light .season-picker-group select,
+html.light .season-picker-group input[type='datetime-local'] {
+  color-scheme: light;
+}
+.season-picker-group button {
+  font-size: 0.75rem;
+  color: var(--accent-soft);
 }

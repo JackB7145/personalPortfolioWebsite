@@ -4,6 +4,7 @@ import { Button } from './ui/button';
 import { Github, Star, GitFork, ExternalLink, CheckCircle2 } from 'lucide-react';
 import { ProjectCard } from '../lib/cardTypes';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useTime } from '../app/contexts/TimeContext';
 
 interface ProjectModalProps {
   project: ProjectCard | null;
@@ -12,6 +13,12 @@ interface ProjectModalProps {
 }
 
 export function ProjectModal({ project, open, onClose }: ProjectModalProps) {
+  // Recharts takes colors as SVG attributes, which can't read CSS vars.
+  const light = useTime().theme === 'light';
+  const chart = light
+    ? { grid: '#E5E7EB', axis: '#6B7280', tipBg: '#FFFFFF', tipText: '#111827' }
+    : { grid: '#374151', axis: '#9CA3AF', tipBg: '#1F2937', tipText: '#fff' };
+
   if (!project) return null;
 
   return (
@@ -93,22 +100,22 @@ export function ProjectModal({ project, open, onClose }: ProjectModalProps) {
                 <div className="h-64 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={project.getCommitHistory()}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                      <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
                       <XAxis 
                         dataKey="date" 
-                        stroke="#9CA3AF" 
+                        stroke={chart.axis} 
                         style={{ fontSize: '12px' }}
                       />
                       <YAxis 
-                        stroke="#9CA3AF" 
+                        stroke={chart.axis} 
                         style={{ fontSize: '12px' }}
                       />
                       <Tooltip 
                         contentStyle={{ 
-                          backgroundColor: '#1F2937', 
-                          border: '1px solid #374151',
+                          backgroundColor: chart.tipBg, 
+                          border: `1px solid ${chart.grid}`,
                           borderRadius: '8px',
-                          color: '#fff'
+                          color: chart.tipText
                         }}
                         labelStyle={{ color: '#EF4444' }}
                       />

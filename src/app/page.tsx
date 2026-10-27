@@ -11,6 +11,7 @@ import { Experience } from '../components/Experience';
 import { Skills } from '../components/Skills';
 import { Chatbot } from '../components/Chatbot';
 import { Contact } from '../components/Contact';
+import { SeasonalDecor } from '../components/SeasonalDecor';
 import { useIsMobile } from '../components/ui/use-mobile';
 
 // three.js background is client-only; load it without SSR to avoid
@@ -20,15 +21,18 @@ const ParticleField = dynamic(
   { ssr: false }
 );
 
+// Scroll distance (in viewport heights) the opening curtain takes to open.
+const INTRO_VH = 100;
+
 export default function Home() {
   const { portfolioData } = useContext(DataContext);
   const [introProgress, setIntroProgress] = useState(0);
   const isMobile = useIsMobile();
 
-  // Drives the opening curtain reveal only (first ~250px of scroll).
+  // Drives the opening curtain reveal over the intro runway (see INTRO_VH).
   useEffect(() => {
     const handleScroll = () => {
-      const scrollThreshold = 250;
+      const scrollThreshold = (window.innerHeight * INTRO_VH) / 100;
       const progress = Math.min(window.scrollY / scrollThreshold, 1);
       setIntroProgress(progress);
     };
@@ -59,13 +63,21 @@ export default function Home() {
       {/* three.js particle background (fixed, behind everything) */}
       <ParticleField isMobile={isMobile} />
 
+      {/* Seasonal floating icons (leaves, snow, flowers, sparkles) */}
+      <SeasonalDecor isMobile={isMobile} />
+
       {/* Opening curtain intro */}
       <ScrollReveal progress={introProgress} />
 
       {/* Persistent navigation */}
       <NavBar />
 
-      <div style={{ opacity: introProgress }}>
+      {/* Intro runway: the curtain opens over this space, so the hero (and the
+          particle portrait) arrive fully in view right as the reveal ends. */}
+      <div aria-hidden="true" style={{ height: `${INTRO_VH}vh` }} />
+
+      {/* Content fades in over the second half of the reveal. */}
+      <div style={{ opacity: Math.max(0, (introProgress - 0.5) / 0.5) }}>
         <Hero personalInfo={personalInfo} />
         <Experience experiencesData={experiences} />
         <Projects projectsData={projects} />

@@ -16,6 +16,7 @@ import {
   makeEnvelope,
   type TargetBuffer,
 } from '../lib/particleShapes';
+import { useTime } from '../app/contexts/TimeContext';
 
 // Ordered to match the page sections. Index i corresponds to sectionIds[i].
 const SECTION_IDS = ['hero', 'experience', 'projects', 'skills', 'contact'];
@@ -34,6 +35,7 @@ function MorphingPoints({
   morphRef,
   reducedMotion,
   isMobile,
+  light,
 }: {
   count: number;
   targets: TargetBuffer[];
@@ -41,6 +43,7 @@ function MorphingPoints({
   morphRef: React.MutableRefObject<number>;
   reducedMotion: boolean;
   isMobile: boolean;
+  light: boolean;
 }) {
   const pointsRef = useRef<THREE.Points>(null);
   const matRef = useRef<THREE.PointsMaterial>(null);
@@ -152,15 +155,18 @@ function MorphingPoints({
       <bufferGeometry ref={geomRef}>
         <bufferAttribute attach="attributes-position" args={[live, 3]} />
       </bufferGeometry>
+      {/* Additive glow vanishes on a light page, so day mode uses normal
+          blending at a higher opacity. Keyed so the blend mode recompiles. */}
       <pointsMaterial
+        key={light ? 'light' : 'dark'}
         ref={matRef}
         size={0.055}
         map={sprite}
         transparent
         depthWrite={false}
         sizeAttenuation
-        blending={THREE.AdditiveBlending}
-        opacity={0.42}
+        blending={light ? THREE.NormalBlending : THREE.AdditiveBlending}
+        opacity={light ? 0.5 : 0.42}
         color={colors[0]}
       />
     </points>
@@ -171,10 +177,12 @@ function Scene({
   morphRef,
   reducedMotion,
   isMobile,
+  light,
 }: {
   morphRef: React.MutableRefObject<number>;
   reducedMotion: boolean;
   isMobile: boolean;
+  light: boolean;
 }) {
   const count = isMobile ? 2200 : 3800;
 
@@ -228,6 +236,7 @@ function Scene({
       morphRef={morphRef}
       reducedMotion={reducedMotion}
       isMobile={isMobile}
+      light={light}
     />
   );
 }
@@ -241,14 +250,17 @@ function Scene({
 export function ParticleField({ isMobile = false }: { isMobile?: boolean }) {
   const morphRef = useSectionMorphRef(SECTION_IDS);
   const reducedMotion = usePrefersReducedMotion();
+  const light = useTime().theme === 'light';
 
   return (
     <div
       aria-hidden="true"
       className="fixed inset-0 -z-10 pointer-events-none"
       style={{
-        background:
-          'radial-gradient(circle at 50% 35%, #140708 0%, #000000 65%)',
+        background: light
+          ? 'radial-gradient(circle at 50% 35%, #fff1f2 0%, #fafafa 65%)'
+          : 'radial-gradient(circle at 50% 35%, #140708 0%, #000000 65%)',
+        transition: 'background 0.6s ease',
       }}
     >
       <Canvas
@@ -262,6 +274,7 @@ export function ParticleField({ isMobile = false }: { isMobile?: boolean }) {
             morphRef={morphRef}
             reducedMotion={reducedMotion}
             isMobile={isMobile}
+            light={light}
           />
         </Suspense>
       </Canvas>

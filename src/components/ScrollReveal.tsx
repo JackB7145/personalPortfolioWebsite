@@ -11,17 +11,17 @@ export function ScrollReveal({ progress }: ScrollRevealProps) {
   const isMobile = useIsMobile();
   
   return (
+    // Curtains start fully closed (opaque) so nothing behind them shows until
+    // the user scrolls, then slide completely off-screen as progress → 1.
     <motion.div
       className="fixed inset-0 z-50 pointer-events-none"
-      style={{
-        opacity: 1 - progress,
-      }}
+      style={{ visibility: isVisible ? 'visible' : 'hidden' }}
     >
       {/* Left curtain */}
       <motion.div
-        className="absolute top-0 left-0 h-full w-1/2 bg-black/60 backdrop-blur-[2px]"
+        className="absolute top-0 left-0 h-full w-1/2 bg-black"
         style={{
-          x: `-${progress * 50}%`,
+          x: `-${progress * 100}%`,
         }}
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_right,rgba(239,68,68,0.15),transparent_70%)]" />
@@ -42,9 +42,9 @@ export function ScrollReveal({ progress }: ScrollRevealProps) {
 
       {/* Right curtain */}
       <motion.div
-        className="absolute top-0 right-0 h-full w-1/2 bg-black/60 backdrop-blur-[2px]"
+        className="absolute top-0 right-0 h-full w-1/2 bg-black"
         style={{
-          x: `${progress * 50}%`,
+          x: `${progress * 100}%`,
         }}
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_left,rgba(239,68,68,0.15),transparent_70%)]" />
@@ -70,6 +70,8 @@ export function ScrollReveal({ progress }: ScrollRevealProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 1 }}
+          // Welcome text fades out over the first half of the reveal.
+          style={{ filter: `opacity(${Math.max(0, 1 - progress * 2)})` }}
         >
           <motion.div
             className="text-center space-y-6 md:space-y-8"

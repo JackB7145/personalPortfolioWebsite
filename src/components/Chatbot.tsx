@@ -161,7 +161,7 @@ export function Chatbot() {
                 placeholder="Ask about Jack's experience, skills, or projects..."
                 className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 flex-1 text-sm md:text-base"
               />
-              <Button onClick={handleSend} disabled={!input.trim() || isTyping} className="bg-red-500 hover:bg-red-600 text-white disabled:opacity-50 disabled:cursor-not-allowed">
+              <Button onClick={handleSend} disabled={!input.trim() || isTyping} className="bg-red-500 hover:bg-red-600 text-[#fff] disabled:opacity-50 disabled:cursor-not-allowed">
                 <Send className="w-4 h-4" />
               </Button>
             </div>

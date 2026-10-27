@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
+import { DigitalClock } from './DigitalClock';
 
 const LINKS = [
   { id: 'hero', label: 'Home' },
@@ -62,12 +63,12 @@ export function NavBar() {
           scrolled ? 'my-2 py-2' : 'my-3 py-3'
         }`}
         style={{
-          background: scrolled ? 'rgba(9,9,11,0.72)' : 'transparent',
+          background: scrolled ? 'var(--nav-bg)' : 'transparent',
           backdropFilter: scrolled ? 'blur(14px)' : 'none',
           WebkitBackdropFilter: scrolled ? 'blur(14px)' : 'none',
           borderRadius: scrolled ? '0.9rem' : 0,
           border: scrolled
-            ? '1px solid rgba(255,255,255,0.08)'
+            ? '1px solid var(--hairline)'
             : '1px solid transparent',
           maxWidth: scrolled ? '66rem' : '72rem',
         }}
@@ -78,7 +79,7 @@ export function NavBar() {
           className="group flex items-center gap-2"
           aria-label="Go to top"
         >
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-500 font-semibold text-white shadow-lg shadow-red-500/30">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-500 font-semibold text-[#fff] shadow-lg shadow-red-500/30">
             JB
           </span>
           <span className="hidden text-sm font-medium tracking-wide text-zinc-200 sm:inline">
@@ -93,7 +94,7 @@ export function NavBar() {
               <button
                 onClick={() => go(link.id)}
                 className="relative px-3 py-2 text-sm transition-colors"
-                style={{ color: active === link.id ? '#fafafa' : '#a1a1aa' }}
+                style={{ color: active === link.id ? 'var(--text-hi)' : 'var(--text-mid)' }}
               >
                 {link.label}
                 {active === link.id && (
@@ -108,20 +109,22 @@ export function NavBar() {
           ))}
         </ul>
 
-        {/* Desktop CTA */}
-        <button onClick={() => go('contact')} className="btn btn-primary hidden md:inline-flex">
-          Let&apos;s talk
-        </button>
+        {/* Right side: local clock + CTA (desktop) / menu toggle (mobile) */}
+        <div className="flex items-center gap-3">
+          <DigitalClock />
+          <button onClick={() => go('contact')} className="btn btn-primary hidden md:inline-flex">
+            Let&apos;s talk
+          </button>
 
-        {/* Mobile toggle */}
-        <button
-          onClick={() => setMenuOpen((o) => !o)}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 text-zinc-200 md:hidden"
-          aria-label="Toggle menu"
-          aria-expanded={menuOpen}
-        >
-          {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+          <button
+            onClick={() => setMenuOpen((o) => !o)}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 text-zinc-200 md:hidden"
+            aria-label="Toggle menu"
+            aria-expanded={menuOpen}
+          >
+            {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </nav>
 
       {/* Mobile menu */}
@@ -139,7 +142,7 @@ export function NavBar() {
                 key={link.id}
                 onClick={() => go(link.id)}
                 className="block w-full rounded-lg px-4 py-3 text-left text-sm transition-colors"
-                style={{ color: active === link.id ? '#f87171' : '#d4d4d8' }}
+                style={{ color: active === link.id ? 'var(--accent-soft)' : 'var(--text-hi)' }}
               >
                 {link.label}
               </button>

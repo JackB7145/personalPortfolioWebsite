@@ -129,7 +129,7 @@ export function Contact() {
                     'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ2CjYTQUUKUuWAyfVIawec_JGaY49dmelTOJwMHS0ZSRmtoc1BHFnRsl0QsQpFjWHbVs9Fri1Mi';
                   window.open(googleCalendarLink, '_blank', 'noopener,noreferrer');
                 }}
-                className="w-full bg-red-500 hover:bg-red-600 text-white text-sm"
+                className="w-full bg-red-500 hover:bg-red-600 text-[#fff] text-sm"
               >
                 Book Coffee Chat
               </Button>
@@ -196,7 +196,7 @@ export function Contact() {
 
                 <Button
                   onClick={handleSendMessage}
-                  className="w-full bg-red-500 hover:bg-red-600 text-white text-sm"
+                  className="w-full bg-red-500 hover:bg-red-600 text-[#fff] text-sm"
                 >
                   Send Message
                 </Button>

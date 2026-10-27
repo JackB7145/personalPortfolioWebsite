@@ -2,6 +2,9 @@
 import './globals.css';
 import { Toaster } from '../components/ui/sonner';
 import { DataProvider } from './contexts/DataContext';
+import { TimeProvider } from './contexts/TimeContext';
+import { THEME_BOOT_SCRIPT } from '../lib/timeTheme';
+import { SeasonPicker } from '../components/SeasonPicker';
 
 export default function RootLayout({
   children,
@@ -9,8 +12,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    // The boot script sets class/data-season before hydration, so React
+    // must not warn about those attributes differing from the server HTML.
+    <html lang="en" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
         {/*
           Load Poppins via a standard stylesheet link instead of
           next/font/google. The next/font loader fetches/parses fonts at
@@ -25,15 +31,18 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=VT323&display=swap"
           rel="stylesheet"
         />
       </head>
       <body style={{ fontFamily: "'Poppins', system-ui, -apple-system, sans-serif" }}>
-        <DataProvider>
-          {children}
-          <Toaster position="bottom-right" />
-        </DataProvider>
+        <TimeProvider>
+          <DataProvider>
+            {children}
+            <Toaster position="bottom-right" />
+          </DataProvider>
+          <SeasonPicker />
+        </TimeProvider>
       </body>
     </html>
   );
